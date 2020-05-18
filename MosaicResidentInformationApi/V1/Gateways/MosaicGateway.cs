@@ -1,3 +1,4 @@
+using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
@@ -15,6 +16,11 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _entityFactory = new EntityFactory();
         }
 
+        public ResidentInformationList GetAllResidentsSelect()
+        {
+            throw new System.NotImplementedException();
+        }
+
         public Entity GetEntityById(int id)
         {
             var result = _mosaicContext.DatabaseEntities.Find(id);
@@ -23,5 +29,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 _entityFactory.ToDomain(result) :
                 null;
         }
+        
     }
 }
