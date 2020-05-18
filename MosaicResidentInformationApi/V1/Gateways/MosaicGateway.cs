@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
@@ -17,6 +18,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
         {
             _mosaicContext = mosaicContext;
             _entityFactory = new EntityFactory();
+        }
+
+
+        public ResidentInformationList GetAllResidentsSelect()
+        {
+            throw new System.NotImplementedException();
         }
 
         public ResidentInformation GetEntityById(int id)
@@ -58,5 +65,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == person.Id);
             return phoneNumbersForPerson.Select(n => _entityFactory.ToDomain(n)).ToList();
         }
+        
     }
 }
