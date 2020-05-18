@@ -163,7 +163,7 @@ jobs:
     executor: docker-dotnet
     steps:
       - attach_workspace:
-          at: /home/circleci/project
+          at: /home/circleci/project/code
       - deploy-lambda:
           aws-role-name: 'LBH_Circle_CI_Deployment_Role'
           aws-account: $AWS_ACCOUNT_STAGING
