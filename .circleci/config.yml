@@ -251,14 +251,12 @@ workflows:
               branches:
                 only: test-pipeline-data-persist
        - terraform-init-and-apply-to-staging:
-           context: api-assume-role-staging-context
            requires:
              - assume-role-staging
            filters:
              branches:
                only: test-pipeline-data-persist
        - deploy-to-staging:
-           context: api-assume-role-staging-context
            requires:
              - assume-role-staging
            filters:
