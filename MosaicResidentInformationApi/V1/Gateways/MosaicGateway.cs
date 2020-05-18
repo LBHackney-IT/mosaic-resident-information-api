@@ -20,10 +20,11 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _entityFactory = new EntityFactory();
         }
 
-
-        public ResidentInformationList GetAllResidentsSelect()
+        public ResidentInformationList GetAllResidentsSelect(string FirstName, string LastName, string Address, string postCode)
         {
-            throw new System.NotImplementedException();
+            var results = _mosaicContext.ResidentDatabaseEntities
+                            .Where(res => res.FirstName.Equals(FirstName) || res.LastName.Equals(LastName));
+            // res.AddressList || 
         }
 
         public ResidentInformation GetEntityById(int id)
@@ -65,6 +66,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == person.Id);
             return phoneNumbersForPerson.Select(n => _entityFactory.ToDomain(n)).ToList();
         }
+
 
     }
 }
