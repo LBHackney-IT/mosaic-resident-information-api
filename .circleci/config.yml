@@ -9,12 +9,15 @@ executors:
   docker-python:
       docker:
         - image: circleci/python:3.7
+      working_directory: /home/circleci/project
   docker-terraform:
      docker:
        -  image: "hashicorp/terraform:light"
+     working_directory: /home/circleci/project
   docker-dotnet:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+     working_directory: /home/circleci/project
 commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
@@ -83,6 +86,8 @@ jobs:
   terraform-init-and-apply-to-staging:
     executor: docker-terraform
     steps:
+      - attach_workspace:
+          at: /home/circleci
       - checkout
       - terraform-init-then-apply:
           aws-role-name: 'LBH_Circle_CI_Deployment_Role'
@@ -110,6 +115,11 @@ jobs:
              account: $AWS_ACCOUNT_STAGING
              profile_name: default
              role: 'LBH_Circle_CI_Deployment_Role'
+       - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - project
+            - .aws
   assume-role-production:
      executor: docker-python
      steps:
@@ -151,6 +161,8 @@ jobs:
   deploy-to-staging:
     executor: docker-dotnet
     steps:
+      - attach_workspace:
+          at: /home/circleci
       - deploy-lambda:
           aws-role-name: 'LBH_Circle_CI_Deployment_Role'
           aws-account: $AWS_ACCOUNT_STAGING
@@ -227,31 +239,31 @@ workflows:
               only: development
   check-and-deploy-staging-and-production:
        jobs:
-       - build-and-test:
-           filters:
-             branches:
-               only: master
+#       - build-and-test:
+#           filters:
+#             branches:
+#               only: test-pipeline-data-persist
        - assume-role-staging:
            context: api-assume-role-staging-context
            requires:
                - build-and-test
            filters:
               branches:
-                only: master
+                only: test-pipeline-data-persist
        - terraform-init-and-apply-to-staging:
            context: api-assume-role-staging-context
            requires:
              - assume-role-staging
            filters:
              branches:
-               only: master
+               only: test-pipeline-data-persist
        - deploy-to-staging:
            context: api-assume-role-staging-context
            requires:
              - assume-role-staging
            filters:
              branches:
-               only: master
+               only: test-pipeline-data-persist
   #     - permit-production-terraform-release:
   #         type: approval
   #         requires:
