@@ -9,15 +9,15 @@ executors:
   docker-python:
       docker:
         - image: circleci/python:3.7
-      working_directory: /tmp
+      working_directory: /home/circleci
   docker-terraform:
      docker:
        -  image: "hashicorp/terraform:light"
-     working_directory: /tmp
+     working_directory: /home/circleci
   docker-dotnet:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
-     working_directory: /tmp
+     working_directory: /home/circleci
 commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
@@ -162,7 +162,7 @@ jobs:
     executor: docker-dotnet
     steps:
       - attach_workspace:
-          at: /tmp/project
+          at: /home/circleci/project
       - deploy-lambda:
           aws-role-name: 'LBH_Circle_CI_Deployment_Role'
           aws-account: $AWS_ACCOUNT_STAGING
