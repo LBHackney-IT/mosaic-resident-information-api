@@ -17,7 +17,7 @@ executors:
   docker-dotnet:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
-     working_directory: /home/circleci/
+     working_directory: /home/circleci/project
 commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
@@ -118,6 +118,7 @@ jobs:
        - persist_to_workspace:
           root: /home/circleci/
           paths:
+            - project
             - .aws
   assume-role-production:
      executor: docker-python
