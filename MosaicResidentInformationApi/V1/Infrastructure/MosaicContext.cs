@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MosaicResidentInformationApi.V1.Boundary.Responses;
 
 namespace MosaicResidentInformationApi.V1.Infrastructure
 {
@@ -9,5 +10,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
         }
 
         public DbSet<DatabaseEntity> DatabaseEntities { get; set; }
+
+        public DbSet<ResidentEntity> ResidentDatabaseEntities { get; set; }
     }
 }
