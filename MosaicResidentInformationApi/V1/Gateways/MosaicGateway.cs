@@ -29,6 +29,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 _entityFactory.ToDomain(result) :
                 null;
         }
-        
+
     }
 }
