@@ -110,6 +110,7 @@ jobs:
   assume-role-staging:
      executor: docker-python
      steps:
+       - checkout
        - aws_assume_role/assume_role:
              account: $AWS_ACCOUNT_STAGING
              profile_name: default
