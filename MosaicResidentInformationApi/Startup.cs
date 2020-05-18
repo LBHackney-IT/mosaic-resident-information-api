@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.Infrastructure;
+using MosaicResidentInformationApi.V1.UseCase;
 using MosaicResidentInformationApi.Versioning;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -125,7 +126,9 @@ namespace MosaicResidentInformationApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            // your usecases here
+            services.AddScoped<IGetAllResidentsUseCase, GetAllResidentsUseCase>();
+            services.AddScoped<IGetEntityByIdUseCase, GetEntityByIdUseCase>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

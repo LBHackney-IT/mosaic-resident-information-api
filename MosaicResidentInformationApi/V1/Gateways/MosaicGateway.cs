@@ -1,3 +1,5 @@
+using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.Boundary.Requests;
 using System.Collections.Generic;
 using System.Linq;
 using MosaicResidentInformationApi.V1.Domain;
@@ -17,6 +19,15 @@ namespace MosaicResidentInformationApi.V1.Gateways
         {
             _mosaicContext = mosaicContext;
             _entityFactory = new EntityFactory();
+        }
+
+        public ResidentInformationList GetAllResidentsSelect(ResidentQueryParam rqp)
+        {
+            List<MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation> results = _mosaicContext.ResidentDatabaseEntities
+                            .Where(res => res.FirstName.Equals(rqp.FirstName) || res.LastName.Equals(rqp.LastName))
+                            .ToList();
+
+            return new ResidentInformationList() { Residents = results };
         }
 
         public ResidentInformation GetEntityById(int id)

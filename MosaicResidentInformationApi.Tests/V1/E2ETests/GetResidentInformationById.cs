@@ -5,10 +5,18 @@ using AutoFixture;
 using FluentAssertions;
 using MosaicResidentInformationApi.Tests.V1.Helper;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+<<<<<<< HEAD
+=======
+using MosaicResidentInformationApi.V1.Domain;
+>>>>>>> - Created GetAllResidentsUseCase and GetById Usecase
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Address = MosaicResidentInformationApi.V1.Boundary.Responses.Address;
+<<<<<<< HEAD
+=======
+using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
+>>>>>>> - Created GetAllResidentsUseCase and GetById Usecase
 
 namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 {
