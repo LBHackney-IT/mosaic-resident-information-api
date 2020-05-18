@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MosaicResidentInformationApi.V1.Controllers;
+using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase;
 using NUnit.Framework;
 
@@ -16,13 +17,15 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
     public class MosaicControllerTests
     {
         private MosaicController _classUnderTest;
-        private Mock<GetAllResidentsUseCase> _mock;
+        private Mock<GetAllResidentsUseCase> _mockGetAllResidentsUseCase;
+        private Mock<IMosaicGateway> _mockIMosaicGateway;
 
         [SetUp]
         public void SetUp()
         {
-            _mock = new Mock<GetAllResidentsUseCase>();
-            _classUnderTest = new MosaicController(_mock.Object);
+            _mockIMosaicGateway = new Mock<IMosaicGateway>();
+            _mockGetAllResidentsUseCase = new Mock<GetAllResidentsUseCase>(_mockIMosaicGateway.Object);
+            _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object);
         }
 
         [Test]
