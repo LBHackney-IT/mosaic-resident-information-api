@@ -17,7 +17,7 @@ executors:
   docker-dotnet:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
-     working_directory: /home/circleci/project
+     working_directory: /tmp
 commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
@@ -110,15 +110,15 @@ jobs:
   assume-role-staging:
      executor: docker-python
      steps:
-       - checkout
        - aws_assume_role/assume_role:
              account: $AWS_ACCOUNT_STAGING
              profile_name: default
              role: 'LBH_Circle_CI_Deployment_Role'
        - persist_to_workspace:
-          root: /home/circleci/
+          root: project
           paths:
-            - project
+            - .aws
+            - credentials
   assume-role-production:
      executor: docker-python
      steps:
@@ -161,7 +161,7 @@ jobs:
     executor: docker-dotnet
     steps:
       - attach_workspace:
-          at: /home/circleci
+          at: /tmp/project
       - deploy-lambda:
           aws-role-name: 'LBH_Circle_CI_Deployment_Role'
           aws-account: $AWS_ACCOUNT_STAGING
