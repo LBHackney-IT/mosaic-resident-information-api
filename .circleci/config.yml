@@ -119,7 +119,6 @@ jobs:
           root: /home/circleci/
           paths:
             - project
-            - .aws
   assume-role-production:
      executor: docker-python
      steps:
