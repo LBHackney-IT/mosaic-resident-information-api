@@ -9,15 +9,15 @@ executors:
   docker-python:
       docker:
         - image: circleci/python:3.7
-      working_directory: /home/circleci
+      working_directory: /home/circleci/project
   docker-terraform:
      docker:
        -  image: "hashicorp/terraform:light"
-     working_directory: /home/circleci
+     working_directory: /home/circleci/project
   docker-dotnet:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
-     working_directory: /home/circleci
+     working_directory: /home/circleci/project
 commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
@@ -116,8 +116,9 @@ jobs:
              profile_name: default
              role: 'LBH_Circle_CI_Deployment_Role'
        - persist_to_workspace:
-          root: project
+          root: /home/circleci/
           paths:
+            - project
             - .aws
             - credentials
   assume-role-production:
