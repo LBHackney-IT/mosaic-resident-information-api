@@ -12,11 +12,11 @@ namespace MosaicResidentInformationApi.V1.UseCase
         public GetAllResidentsUseCase(IMosaicGateway iMosaicGateway)
         {
             _iMosaicGateway = iMosaicGateway;
-        }        
-        
+        }
+
         public ResidentInformationList Execute()
         {
             return _iMosaicGateway.GetAllResidentsSelect();
-        }        
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace MosaicResidentInformationApi.V1.Controllers
     {
         private GetAllResidentsUseCase _getAllResidentsUseCase;
         public MosaicController(GetAllResidentsUseCase getAllResidentsUseCase)
-        {            
+        {
             _getAllResidentsUseCase = getAllResidentsUseCase;
         }
         /// <summary>
