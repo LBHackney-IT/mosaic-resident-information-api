@@ -245,8 +245,8 @@ workflows:
 #               only: test-pipeline-data-persist
        - assume-role-staging:
            context: api-assume-role-staging-context
-           requires:
-               - build-and-test
+#           requires:
+#               - build-and-test
            filters:
               branches:
                 only: test-pipeline-data-persist
