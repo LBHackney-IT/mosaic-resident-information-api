@@ -9,11 +9,11 @@ executors:
   docker-python:
       docker:
         - image: circleci/python:3.7
-      working_directory: /home/circleci/project
+      working_directory: /tmp
   docker-terraform:
      docker:
        -  image: "hashicorp/terraform:light"
-     working_directory: /home/circleci/project
+     working_directory: /tmp
   docker-dotnet:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
