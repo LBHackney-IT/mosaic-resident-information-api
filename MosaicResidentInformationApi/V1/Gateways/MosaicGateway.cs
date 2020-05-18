@@ -65,6 +65,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == person.Id);
             return phoneNumbersForPerson.Select(n => _entityFactory.ToDomain(n)).ToList();
         }
-        
+
     }
 }
