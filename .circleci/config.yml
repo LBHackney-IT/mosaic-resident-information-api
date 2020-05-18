@@ -18,7 +18,7 @@ executors:
      docker:
        - image: mcr.microsoft.com/dotnet/core/sdk:3.1
      working_directory: /home/circleci/
-
+commands:
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
