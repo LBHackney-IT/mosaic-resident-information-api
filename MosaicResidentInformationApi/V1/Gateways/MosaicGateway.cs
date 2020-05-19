@@ -27,7 +27,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return new ResidentInformationList() { Residents = results };
         }
 
-        public Entity GetEntityById(int id)
+        public Entity GetEntityById(string id)
         {
             var result = _mosaicContext.DatabaseEntities.Find(id);
 
