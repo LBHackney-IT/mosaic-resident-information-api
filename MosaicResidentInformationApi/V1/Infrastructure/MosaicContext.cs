@@ -14,6 +14,6 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
         public DbSet<Address> Addresses { get; set; }
         public DbSet<DatabaseEntity> DatabaseEntities { get; set; }
 
-        public DbSet<ResidentEntity> ResidentDatabaseEntities { get; set; }
+        public DbSet<ResidentInformation> ResidentDatabaseEntities { get; set; }
     }
 }
