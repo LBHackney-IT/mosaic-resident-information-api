@@ -14,10 +14,10 @@ namespace MosaicResidentInformationApi.Tests.V1.Infrastructure
         {
             var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntity();
 
-            _mosaicContext.Add(databaseEntity);
-            _mosaicContext.SaveChanges();
+            MosaicContext.Add(databaseEntity);
+            MosaicContext.SaveChanges();
 
-            var result = _mosaicContext.DatabaseEntities.ToList().FirstOrDefault();
+            var result = MosaicContext.DatabaseEntities.ToList().FirstOrDefault();
 
             result.Should().BeEquivalentTo(databaseEntity);
         }

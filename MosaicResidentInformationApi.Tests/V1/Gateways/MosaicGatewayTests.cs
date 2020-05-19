@@ -15,7 +15,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new MosaicGateway(_mosaicContext);
+            _classUnderTest = new MosaicGateway(MosaicContext);
         }
 
         [Test]
@@ -32,8 +32,8 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             var entity = EntityHelper.CreateEntity();
             var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
-            _mosaicContext.DatabaseEntities.Add(databaseEntity);
-            _mosaicContext.SaveChanges();
+            MosaicContext.DatabaseEntities.Add(databaseEntity);
+            MosaicContext.SaveChanges();
 
             var response = _classUnderTest.GetEntityById(databaseEntity.Id);
 

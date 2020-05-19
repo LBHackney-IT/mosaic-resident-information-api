@@ -33,9 +33,8 @@ commands:
        - run:
           name: apply
           command: |
-            cd ./terraform/ 
+            cd ./terraform/
             terraform apply -auto-approve
-
 
   deploy-lambda:
     description: "Deploys API via Serverless"
@@ -70,7 +69,7 @@ commands:
           name: Deploy lamdba
           command: |
             cd ./MosaicResidentInformationApi/
-            sls deploy --stage <<parameters.stage>> --aws-profile default
+            sls deploy --stage <<parameters.stage>>
 
 jobs:
   terraform-init-and-apply-to-development:
@@ -162,42 +161,6 @@ jobs:
           aws-role-name: 'LBH_Circle_CI_Deployment_Role'
           aws-account: $AWS_ACCOUNT_PRODUCTION
           stage: 'production'
-  build_and_push_image_development:
-    executor: aws-ecr/default
-    steps:
-      - build_and_push_image:
-          dockerfile: ./MosaicResidentInformationApi/Dockerfile
-          path: ./MosaicResidentInformationApi
-          account-url: AWS_ECR_HOST_DEVELOPMENT
-          repo: $AWS_ECR_PATH_DEV
-          region: AWS_REGION
-          tag: "${CIRCLE_SHA1}"
-          aws-role-name: 'LBH_Circle_CI_Deployment_Role'
-          aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  build_and_push_image_staging:
-    executor: aws-ecr/default
-    steps:
-      - build_and_push_image:
-          dockerfile: ./MosaicResidentInformationApi/Dockerfile
-          path: $PROJECT_PATH
-          account-url: AWS_ECR_HOST_STAGING
-          repo: $AWS_ECR_PATH_STAGING
-          region: AWS_REGION
-          tag: "${CIRCLE_SHA1}"
-          aws-role-name: 'LBH_Circle_CI_Deployment_Role'
-          aws-account: $AWS_ACCOUNT_STAGING
-  build_and_push_image_production:
-    executor: aws-ecr/default
-    steps:
-      - build_and_push_image:
-          dockerfile: ./MosaicResidentInformationApi/Dockerfile
-          path: $PROJECT_PATH
-          account-url: AWS_ECR_HOST_PRODUCTION
-          repo: $AWS_ECR_PATH_PRODUCTION
-          region: AWS_REGION
-          tag: "${CIRCLE_SHA1}"
-          aws-role-name: 'LBH_Circle_CI_Deployment_Role'
-          aws-account: $AWS_ACCOUNT_PRODUCTION
 
 workflows:
   check-and-deploy:
@@ -231,55 +194,49 @@ workflows:
            filters:
              branches:
                only: master
-       - assume-role-staging:
-           context: api-assume-role-staging-context
-           requires:
-               - build-and-test
-           filters:
-              branches:
-                only: master
        - terraform-init-and-apply-to-staging:
            context: api-assume-role-staging-context
            requires:
-             - assume-role-staging
+             - build-and-test
            filters:
              branches:
                only: master
        - deploy-to-staging:
            context: api-assume-role-staging-context
            requires:
-             - assume-role-staging
+             - build-and-test
            filters:
              branches:
                only: master
-  #     - permit-production-terraform-release:
-  #         type: approval
-  #         requires:
-  #           - deploy-to-staging
-  #     - assume-role-production:
-  #         context: api-assume-role-production-context
-  #         requires:
-  #             - permit-production-terraform-release
-  #         filters:
-  #            branches:
-  #              only: master
-  #     - terraform-init-and-apply-to-production:
-  #         requires:
-  #           - assume-role-production
-  #         filters:
-  #           branches:
-  #             only: master
-  #     - permit-production-release:
-  #         type: approval
-  #         requires:
-  #           - deploy-to-staging
-  #         filters:
-  #           branches:
-  #             only: master
-  #     - deploy-to-production:
-  #         context: api-assume-role-production-context
-  #         requires:
-  #           - permit-production-release
-  #         filters:
-  #           branches:
-  #             only: master
+       - permit-production-terraform-release:
+           type: approval
+           requires:
+             - deploy-to-staging
+       - assume-role-production:
+           context: api-assume-role-production-context
+           requires:
+               - permit-production-terraform-release
+           filters:
+              branches:
+                only: master
+       - terraform-init-and-apply-to-production:
+           requires:
+             - assume-role-production
+           filters:
+             branches:
+               only: master
+       - permit-production-release:
+           type: approval
+           requires:
+             - deploy-to-staging
+           filters:
+             branches:
+               only: master
+       - deploy-to-production:
+           context: api-assume-role-production-context
+           requires:
+             - assume-role-production
+             - permit-production-release
+           filters:
+             branches:
+               only: master

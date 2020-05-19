@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MosaicResidentInformationApi.V1.Infrastructure
 {
-    [Table("example_entities")]
+    [Table("example_table")]
     public class DatabaseEntity
     {
         [Column("id")] public int Id { get; set; }
