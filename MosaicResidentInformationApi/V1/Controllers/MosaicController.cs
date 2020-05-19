@@ -36,8 +36,9 @@ namespace MosaicResidentInformationApi.V1.Controllers
 
         [HttpGet]
         [Route("{mosaicId}")]
-        public IActionResult ViewRecord(string mosaicId)
+        public IActionResult ViewRecord(int mosaicId)
         {
+            
             return Ok(_getEntityByIdUseCase.Execute(mosaicId));
         }
 
