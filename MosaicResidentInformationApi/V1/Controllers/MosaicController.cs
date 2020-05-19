@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,12 @@ namespace MosaicResidentInformationApi.V1.Controllers
     public class MosaicController : BaseController
     {
         private GetAllResidentsUseCase _getAllResidentsUseCase;
-        public MosaicController(GetAllResidentsUseCase getAllResidentsUseCase)
+        private GetEntityByIdUseCase _getEntityByIdUseCase;
+        public MosaicController(GetAllResidentsUseCase getAllResidentsUseCase, GetEntityByIdUseCase getEntityByIdUseCase)
         {
             _getAllResidentsUseCase = getAllResidentsUseCase;
+            _getEntityByIdUseCase = getEntityByIdUseCase;
+
         }
         /// <summary>
         /// Returns list of contacts who share the query search parameter
@@ -26,6 +30,7 @@ namespace MosaicResidentInformationApi.V1.Controllers
         [HttpGet]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp)
         {
+
             return Ok(_getAllResidentsUseCase.Execute(rqp));
         }
 
@@ -33,7 +38,7 @@ namespace MosaicResidentInformationApi.V1.Controllers
         [Route("{mosaicId}")]
         public IActionResult ViewRecord(string mosaicId)
         {
-            return Ok("Hello World");
+            return Ok(_getEntityByIdUseCase.Execute(mosaicId));
         }
 
     }
