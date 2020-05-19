@@ -27,18 +27,18 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         {
             _mockIMosaicGateway = new Mock<IMosaicGateway>();
             _mockGetAllResidentsUseCase = new Mock<GetAllResidentsUseCase>(_mockIMosaicGateway.Object);
-            _mockGetEntityByIdUseCase = new Mock<GetEntityByIdUseCase>(_mockGetEntityByIdUseCase);
+            _mockGetEntityByIdUseCase = new Mock<GetEntityByIdUseCase>(_mockIMosaicGateway.Object);
             _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object, _mockGetEntityByIdUseCase.Object);
         }
 
         [Test]
         public void ViewRecordTests()
         {
-            var response = _classUnderTest.ViewRecord("12345") as OkObjectResult;
+            var response = _classUnderTest.ViewRecord(12345) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(new ResidentInformationList());
+            response.Value.Should().BeNull();
 
         }
 
@@ -51,14 +51,12 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
                 LastName = "test1",
                 Address = "1 Hillman Street",
                 PostCode = "E8 1DY"
-
             };
             var response = _classUnderTest.ListContacts(residentQueryParam) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
-            response.Value.Should().BeEquivalentTo(new Entity());
-
+            response.Value.Should().BeNull();
         }
 
     }

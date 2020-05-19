@@ -11,7 +11,7 @@ namespace MosaicResidentInformationApi.V1.UseCase
             _iMosaicGateway = iMosaicGateway;
         }
 
-        public Entity Execute(string id)
+        public Entity Execute(int id)
         {
             return _iMosaicGateway.GetEntityById(id);
         }
