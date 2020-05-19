@@ -38,7 +38,7 @@ namespace MosaicResidentInformationApi.V1.Controllers
         [Route("{mosaicId}")]
         public IActionResult ViewRecord(int mosaicId)
         {
-            
+
             return Ok(_getEntityByIdUseCase.Execute(mosaicId));
         }
 
