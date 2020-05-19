@@ -12,7 +12,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Infrastructure
         [Test]
         public void CanGetADatabaseEntity()
         {
-            var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntity();
+            var databaseEntity = TestHelper.CreateDatabaseEntity();
 
             MosaicContext.Add(databaseEntity);
             MosaicContext.SaveChanges();

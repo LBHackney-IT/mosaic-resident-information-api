@@ -5,12 +5,10 @@ namespace MosaicResidentInformationApi.V1.Factories
 {
     public class EntityFactory : AbstractEntityFactory
     {
-        public override Entity ToDomain(DatabaseEntity databaseEntity)
+        public override ResidentInformation ToDomain(DatabaseEntity databaseEntity)
         {
-            return new Entity
+            return new ResidentInformation()
             {
-                Id = databaseEntity.Id,
-                CreatedAt = databaseEntity.CreatedAt,
             };
         }
     }
