@@ -1,3 +1,4 @@
+using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
@@ -17,11 +18,13 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _entityFactory = new EntityFactory();
         }
 
-        public ResidentInformationList GetAllResidentsSelect(string FirstName, string LastName, string Address, string postCode)
+        public ResidentInformationList GetAllResidentsSelect(ResidentQueryParam rqp)
         {
             var results = _mosaicContext.ResidentDatabaseEntities
-                            .Where(res => res.FirstName.Equals(FirstName) || res.LastName.Equals(LastName));
-            // res.AddressList || 
+                            .Where(res => res.FirstName.Equals(rqp.FirstName) || res.LastName.Equals(rqp.LastName))
+                            .ToList();
+
+            return new ResidentInformationList() { Residents = results };
         }
 
         public Entity GetEntityById(int id)
