@@ -6,7 +6,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
     public interface IMosaicContext
     {
         DbSet<DatabaseEntity> DatabaseEntities { get; set; }
-        DbSet<ResidentEntity> ResidentDatabaseEntities { get; set; }
+        DbSet<ResidentInformation> ResidentDatabaseEntities { get; set; }
 
     }
 
