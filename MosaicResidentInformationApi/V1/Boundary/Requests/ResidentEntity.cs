@@ -9,7 +9,7 @@ namespace MosaicResidentInformationApi.V1.Boundary.Requests
         /// Ciasom
         /// </example>
         /// Databind to first_name
-        [FromQuery(Name ="first_name")]
+        [FromQuery(Name = "first_name")]
         public string FirstName { get; set; }
         /// <example>
         /// Tessellate
