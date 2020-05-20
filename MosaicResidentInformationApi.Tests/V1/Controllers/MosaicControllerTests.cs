@@ -61,12 +61,12 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
                 Address = "1 Hillman Street",
                 PostCode = "E8 1DY"
             };
-     
+
             List<ResidentInformation> residentInfo = new List<ResidentInformation>()
             {
                 _residentInfo
             };
-            
+
             ResidentInformationList residentInformationList = new ResidentInformationList()
             {
                 Residents = residentInfo
@@ -77,7 +77,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
-            response.Value.Should().Equals(residentInformationList);
+            response.Value.Should().BeEquivalentTo(residentInformationList);
         }
 
     }
