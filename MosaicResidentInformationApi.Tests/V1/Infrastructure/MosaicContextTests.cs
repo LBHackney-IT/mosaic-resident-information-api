@@ -12,12 +12,12 @@ namespace MosaicResidentInformationApi.Tests.V1.Infrastructure
         [Test]
         public void CanGetADatabaseEntity()
         {
-            var databaseEntity = TestHelper.CreateDatabaseEntity();
+            var databaseEntity = TestHelper.CreateDatabasePersonEntity();
 
             MosaicContext.Add(databaseEntity);
             MosaicContext.SaveChanges();
 
-            var result = MosaicContext.DatabaseEntities.ToList().FirstOrDefault();
+            var result = MosaicContext.Persons.ToList().FirstOrDefault();
 
             result.Should().BeEquivalentTo(databaseEntity);
         }

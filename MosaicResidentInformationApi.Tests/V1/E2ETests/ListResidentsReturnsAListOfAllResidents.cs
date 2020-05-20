@@ -1,5 +1,8 @@
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using MosaicResidentInformationApi.V1.Boundary.Responses;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace MosaicResidentInformationApi.Tests.V1.E2ETests
@@ -15,20 +18,26 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             _fixture = new Fixture();
         }
 
+        [Ignore("In Progress")]
         [Test]
-        public void ListResidentsReturnsAllResidentRecordInMosaic()
+        public async Task ListResidentsReturnsAllResidentRecordInMosaic()
         {
-            //Add some records to the database
-            // var residents = _fixture.CreateMany<>()
+            var expectedResidentResponseOne = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext);
+            var expectedResidentResponseTwo = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext);
+            var expectedResidentResponseThree = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext);
 
-            //Call endpoint
             var response = Client.GetAsync("api/v1/residents");
-            var statusCode = response.Result.StatusCode;
-            var context = response.Result.Content;
 
+            var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
-            //Check records have been returned
+            var content = response.Result.Content;
+            var stringContent = await content.ReadAsStringAsync();
+            var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
+
+            convertedResponse.Residents.Should().ContainEquivalentOf(expectedResidentResponseOne);
+            convertedResponse.Residents.Should().ContainEquivalentOf(expectedResidentResponseTwo);
+            convertedResponse.Residents.Should().ContainEquivalentOf(expectedResidentResponseThree);
         }
     }
 }

@@ -25,6 +25,11 @@ namespace MosaicResidentInformationApi.Tests
             var npgsqlCommand = _connection.CreateCommand();
             npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
             npgsqlCommand.ExecuteNonQuery();
+
+            var builder = new DbContextOptionsBuilder();
+            builder.UseNpgsql(ConnectionString.TestDatabase());
+            MosaicContext = new MosaicContext(builder.Options);
+            MosaicContext.Database.EnsureCreated();
         }
 
         [SetUp]
