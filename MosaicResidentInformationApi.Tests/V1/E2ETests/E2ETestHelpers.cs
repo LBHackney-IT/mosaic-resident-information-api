@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MosaicResidentInformationApi.Tests.V1.Helper;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
-using Domain =  MosaicResidentInformationApi.V1.Domain;
+using Domain = MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using ResponseAddress = MosaicResidentInformationApi.V1.Boundary.Responses;
