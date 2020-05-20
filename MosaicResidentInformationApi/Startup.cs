@@ -126,7 +126,9 @@ namespace MosaicResidentInformationApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<GetAllResidentsUseCase>();
+            services.AddScoped<IGetAllResidentsUseCase, GetAllResidentsUseCase>();
+            services.AddScoped<IGetEntityByIdUseCase, GetEntityByIdUseCase>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

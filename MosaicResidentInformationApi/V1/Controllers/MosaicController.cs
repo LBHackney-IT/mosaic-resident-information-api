@@ -14,9 +14,9 @@ namespace MosaicResidentInformationApi.V1.Controllers
     [ApiVersion("1.0")]
     public class MosaicController : BaseController
     {
-        private GetAllResidentsUseCase _getAllResidentsUseCase;
-        private GetEntityByIdUseCase _getEntityByIdUseCase;
-        public MosaicController(GetAllResidentsUseCase getAllResidentsUseCase, GetEntityByIdUseCase getEntityByIdUseCase)
+        private IGetAllResidentsUseCase _getAllResidentsUseCase;
+        private IGetEntityByIdUseCase _getEntityByIdUseCase;
+        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase, IGetEntityByIdUseCase getEntityByIdUseCase)
         {
             _getAllResidentsUseCase = getAllResidentsUseCase;
             _getEntityByIdUseCase = getEntityByIdUseCase;

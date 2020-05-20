@@ -4,7 +4,7 @@ using MosaicResidentInformationApi.V1.Gateways;
 
 namespace MosaicResidentInformationApi.V1.UseCase
 {
-    public class GetAllResidentsUseCase
+    public class GetAllResidentsUseCase : IGetAllResidentsUseCase
     {
         private IMosaicGateway _iMosaicGateway;
         public GetAllResidentsUseCase(IMosaicGateway iMosaicGateway)
