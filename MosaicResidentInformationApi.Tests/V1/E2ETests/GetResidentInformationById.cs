@@ -5,6 +5,7 @@ using AutoFixture;
 using FluentAssertions;
 using MosaicResidentInformationApi.Tests.V1.Helper;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Newtonsoft.Json;
 using NUnit.Framework;
