@@ -3,7 +3,7 @@ using MosaicResidentInformationApi.V1.Gateways;
 
 namespace MosaicResidentInformationApi.V1.UseCase
 {
-    public class GetEntityByIdUseCase
+    public class GetEntityByIdUseCase : IGetEntityByIdUseCase
     {
         private IMosaicGateway _iMosaicGateway;
         public GetEntityByIdUseCase(IMosaicGateway iMosaicGateway)
