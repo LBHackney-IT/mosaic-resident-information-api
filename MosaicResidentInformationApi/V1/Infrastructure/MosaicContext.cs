@@ -9,7 +9,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
         {
         }
 
-        public DbSet<ResidentInformation> ResidentDatabaseEntities { get; set; }
+        public DbSet<MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation> ResidentDatabaseEntities { get; set; }
         public DbSet<Person> Persons { get; set; }
         public DbSet<TelephoneNumber> TelephoneNumbers { get; set; }
         public DbSet<Address> Addresses { get; set; }

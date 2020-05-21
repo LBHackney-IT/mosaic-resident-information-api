@@ -9,6 +9,7 @@ using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Domain;
 using System.Collections.Generic;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -43,12 +44,20 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         [Test]
         public void ViewRecordTests()
         {
-            _mockGetEntityByIdUseCase.Setup(x => x.Execute(12345)).Returns(_residentInfo);
+            MosaicResidentInformationApi.V1.Domain.ResidentInformation residentInfo;
+            residentInfo = new MosaicResidentInformationApi.V1.Domain.ResidentInformation()
+            {
+                FirstName = "test",
+                LastName = "test",
+                DateOfBirth = "01/01/2020"
+            };
+
+            _mockGetEntityByIdUseCase.Setup(x => x.Execute(12345)).Returns(residentInfo);
             var response = _classUnderTest.ViewRecord(12345) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
-            response.Value.Should().Equals(_residentInfo);
+            response.Value.Should().BeEquivalentTo(residentInfo);
         }
 
         [Test]

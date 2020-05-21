@@ -23,7 +23,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
 
         public ResidentInformationList GetAllResidentsSelect(ResidentQueryParam rqp)
         {
-            var results = _mosaicContext.ResidentDatabaseEntities
+            List<MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation> results = _mosaicContext.ResidentDatabaseEntities
                             .Where(res => res.FirstName.Equals(rqp.FirstName) || res.LastName.Equals(rqp.LastName))
                             .ToList();
 
