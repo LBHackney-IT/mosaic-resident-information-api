@@ -6,7 +6,6 @@ using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase;
 using NUnit.Framework;
 using MosaicResidentInformationApi.V1.Boundary.Requests;
-using MosaicResidentInformationApi.V1.Domain;
 using System.Collections.Generic;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
