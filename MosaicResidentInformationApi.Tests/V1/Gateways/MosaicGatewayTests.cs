@@ -28,7 +28,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
         [Test]
         public void GetResidentInformationByPersonId_WhenThereAreNoMatchingRecords_ReturnsNull()
         {
-            var response = _classUnderTest.GetEntityById(123);
+            var response = _classUnderTest.GetResidentInformationByPersonId(123);
 
             response.Should().BeNull();
         }
@@ -37,7 +37,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
         public void GetResidentInformationByPersonId_ReturnsPersonalDetails()
         {
             var databaseEntity = AddPersonRecordToDatabase();
-            var response = _classUnderTest.GetEntityById(databaseEntity.Id);
+            var response = _classUnderTest.GetResidentInformationByPersonId(databaseEntity.Id);
 
             response.FirstName.Should().Be(databaseEntity.FirstName);
             response.LastName.Should().Be(databaseEntity.LastName);
@@ -55,7 +55,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address);
             MosaicContext.SaveChanges();
 
-            var response = _classUnderTest.GetEntityById(databaseEntity.Id);
+            var response = _classUnderTest.GetResidentInformationByPersonId(databaseEntity.Id);
 
             var expectedDomainAddress = new DomainAddress
             {
@@ -80,7 +80,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(addressCurrent);
             MosaicContext.SaveChanges();
 
-            var response = _classUnderTest.GetEntityById(databaseEntity.Id);
+            var response = _classUnderTest.GetResidentInformationByPersonId(databaseEntity.Id);
             response.Uprn.Should().Be(addressCurrent.Uprn.ToString());
         }
 
@@ -95,7 +95,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.TelephoneNumbers.Add(phoneNumber);
             MosaicContext.SaveChanges();
 
-            var response = _classUnderTest.GetEntityById(databaseEntity.Id);
+            var response = _classUnderTest.GetResidentInformationByPersonId(databaseEntity.Id);
             response.PhoneNumberList.Should().BeEquivalentTo(new List<PhoneNumber>
             {
                 new PhoneNumber {Number = phoneNumber.Number, Type = PhoneType.Primary}

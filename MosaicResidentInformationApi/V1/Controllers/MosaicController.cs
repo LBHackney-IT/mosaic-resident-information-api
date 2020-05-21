@@ -15,11 +15,11 @@ namespace MosaicResidentInformationApi.V1.Controllers
     public class MosaicController : BaseController
     {
         private IGetAllResidentsUseCase _getAllResidentsUseCase;
-        private IGetEntityByIdUseCase _getEntityByIdUseCase;
-        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase, IGetEntityByIdUseCase getEntityByIdUseCase)
+        private IGetResidentInformationByPersonIdUseCase _getResidentInformationByPersonIdUseCase;
+        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase, IGetResidentInformationByPersonIdUseCase getResidentInformationByPersonIdUseCase)
         {
             _getAllResidentsUseCase = getAllResidentsUseCase;
-            _getEntityByIdUseCase = getEntityByIdUseCase;
+            _getResidentInformationByPersonIdUseCase = getResidentInformationByPersonIdUseCase;
 
         }
         /// <summary>
@@ -39,7 +39,7 @@ namespace MosaicResidentInformationApi.V1.Controllers
         public IActionResult ViewRecord(int mosaicId)
         {
 
-            return Ok(_getEntityByIdUseCase.Execute(mosaicId));
+            return Ok(_getResidentInformationByPersonIdUseCase.Execute(mosaicId));
         }
 
     }

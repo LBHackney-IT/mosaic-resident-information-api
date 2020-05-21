@@ -1,8 +1,6 @@
 using AutoFixture;
-using Bogus;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Infrastructure;
-using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
@@ -22,11 +20,11 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
             return faker.Create<Person>();
         }
 
-        public static Address CreateDatabaseAddressForPersonId(int personId)
+        public static AddressSchema CreateDatabaseAddressForPersonId(int personId)
         {
             var faker = new Fixture();
 
-            return faker.Build<Address>()
+            return faker.Build<AddressSchema>()
                 .With(add => add.PersonId, personId)
                 .Without(add => add.Person)
                 .Create();

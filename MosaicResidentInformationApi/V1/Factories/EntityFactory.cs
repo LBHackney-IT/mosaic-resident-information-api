@@ -2,8 +2,6 @@ using System;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Infrastructure;
-using Address = MosaicResidentInformationApi.V1.Domain.Address;
-using DbAddress = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
 namespace MosaicResidentInformationApi.V1.Factories
@@ -27,7 +25,7 @@ namespace MosaicResidentInformationApi.V1.Factories
             return canParseType ? new PhoneNumber { Number = number.Number, Type = type } : null;
         }
 
-        public override Address ToDomain(DbAddress address)
+        public override Address ToDomain(AddressSchema address)
         {
             return new Address
             {

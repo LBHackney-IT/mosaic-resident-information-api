@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using MosaicResidentInformationApi.Tests.V1.Helper;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Infrastructure;
-using Address = MosaicResidentInformationApi.V1.Boundary.Responses.Address;
 
 namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 {
@@ -34,9 +33,9 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
                         new Phone {PhoneNumber = phone.Number, PhoneType = Enum.Parse<PhoneType>(phone.Type)}
                     },
                 DateOfBirth = person.DateOfBirth.ToString("O"),
-                AddressList = new List<Address>
+                AddressList = new List<AddressResponse>
                 {
-                    new Address {AddressLine1 = address.AddressLines, PostCode = address.PostCode}
+                    new AddressResponse {AddressLine1 = address.AddressLines, PostCode = address.PostCode}
                 }
             };
         }

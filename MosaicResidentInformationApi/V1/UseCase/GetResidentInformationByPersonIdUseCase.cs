@@ -3,17 +3,17 @@ using MosaicResidentInformationApi.V1.Gateways;
 
 namespace MosaicResidentInformationApi.V1.UseCase
 {
-    public class GetEntityByIdUseCase : IGetEntityByIdUseCase
+    public class GetResidentInformationByPersonIdUseCase : IGetResidentInformationByPersonIdUseCase
     {
         private IMosaicGateway _iMosaicGateway;
-        public GetEntityByIdUseCase(IMosaicGateway iMosaicGateway)
+        public GetResidentInformationByPersonIdUseCase(IMosaicGateway iMosaicGateway)
         {
             _iMosaicGateway = iMosaicGateway;
         }
 
         public ResidentInformation Execute(int id)
         {
-            return _iMosaicGateway.GetEntityById(id);
+            return _iMosaicGateway.GetResidentInformationByPersonId(id);
         }
     }
 }

@@ -2,7 +2,7 @@ using MosaicResidentInformationApi.V1.Domain;
 
 namespace MosaicResidentInformationApi.V1.UseCase
 {
-    public interface IGetEntityByIdUseCase
+    public interface IGetResidentInformationByPersonIdUseCase
     {
         ResidentInformation Execute(int id);
     }

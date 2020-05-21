@@ -9,7 +9,6 @@ using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Address = MosaicResidentInformationApi.V1.Boundary.Responses.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 
 namespace MosaicResidentInformationApi.Tests.V1.E2ETests

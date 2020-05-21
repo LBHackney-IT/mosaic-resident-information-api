@@ -5,7 +5,6 @@ using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
-using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
 namespace MosaicResidentInformationApi.V1.Gateways
@@ -30,7 +29,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return new ResidentInformationList() { Residents = results };
         }
 
-        public ResidentInformation GetEntityById(int id)
+        public ResidentInformation GetResidentInformationByPersonId(int id)
         {
             var databaseRecord = _mosaicContext.Persons.Find(id);
             if (databaseRecord == null) return null;
@@ -46,7 +45,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return person;
         }
 
-        private static string GetMostRecentUprn(IQueryable<Address> addressesForPerson)
+        private static string GetMostRecentUprn(IQueryable<AddressSchema> addressesForPerson)
         {
             if (!addressesForPerson.Any()) return null;
             var currentAddress = addressesForPerson.FirstOrDefault(a => a.EndDate == null);
@@ -58,7 +57,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return addressesForPerson.OrderByDescending(a => a.EndDate).First().Uprn.ToString();
         }
 
-        private List<MosaicResidentInformationApi.V1.Domain.Address> GetAddressesByPersonId(Person person)
+        private List<Address> GetAddressesByPersonId(Person person)
         {
             var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId == person.Id);
             return addressesForPerson.Select(s => _entityFactory.ToDomain(s)).ToList();

@@ -20,7 +20,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
     {
         private MosaicController _classUnderTest;
         private Mock<IGetAllResidentsUseCase> _mockGetAllResidentsUseCase;
-        private Mock<IGetEntityByIdUseCase> _mockGetEntityByIdUseCase;
+        private Mock<IGetResidentInformationByPersonIdUseCase> _mockGetResidentInformationByPersonIdUseCase;
 
         private Mock<IMosaicGateway> _mockIMosaicGateway;
         private ResidentInformation _residentInfo;
@@ -30,8 +30,8 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         {
             _mockIMosaicGateway = new Mock<IMosaicGateway>();
             _mockGetAllResidentsUseCase = new Mock<IGetAllResidentsUseCase>();
-            _mockGetEntityByIdUseCase = new Mock<IGetEntityByIdUseCase>();
-            _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object, _mockGetEntityByIdUseCase.Object);
+            _mockGetResidentInformationByPersonIdUseCase = new Mock<IGetResidentInformationByPersonIdUseCase>();
+            _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object, _mockGetResidentInformationByPersonIdUseCase.Object);
             _residentInfo = new ResidentInformation()
             {
                 FirstName = "test",
@@ -51,7 +51,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
                 DateOfBirth = "01/01/2020"
             };
 
-            _mockGetEntityByIdUseCase.Setup(x => x.Execute(12345)).Returns(residentInfo);
+            _mockGetResidentInformationByPersonIdUseCase.Setup(x => x.Execute(12345)).Returns(residentInfo);
             var response = _classUnderTest.ViewRecord(12345) as OkObjectResult;
 
             response.Should().NotBeNull();

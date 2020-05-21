@@ -8,10 +8,10 @@ using NUnit.Framework;
 namespace MosaicResidentInformationApi.Tests.V1.UseCase
 {
     [TestFixture]
-    public class GetEntityByIdCaseTest
+    public class GetResidentInformationByPersonIdUseCaseTest
     {
         private Mock<IMosaicGateway> _mockMosaicGateway;
-        private GetEntityByIdUseCase _classUnderTest;
+        private GetResidentInformationByPersonIdUseCase _classUnderTest;
         private ResidentInformation _residentInfo;
 
         [SetUp]
@@ -26,10 +26,10 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
 
             _mockMosaicGateway = new Mock<IMosaicGateway>();
             _mockMosaicGateway.Setup(x =>
-                    x.GetEntityById(12345))
+                    x.GetResidentInformationByPersonId(12345))
                 .Returns(_residentInfo);
 
-            _classUnderTest = new GetEntityByIdUseCase(_mockMosaicGateway.Object);
+            _classUnderTest = new GetResidentInformationByPersonIdUseCase(_mockMosaicGateway.Object);
         }
 
         [Test]

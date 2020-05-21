@@ -6,8 +6,6 @@ using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using NUnit.Framework;
-using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
-using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
 namespace MosaicResidentInformationApi.Tests.V1.Factories
@@ -61,9 +59,9 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
         [Test]
         public void ItMapsADatabaseAddressToADomainObject()
         {
-            var dbAddress = _fixture.Create<Address>();
+            var dbAddress = _fixture.Create<AddressSchema>();
 
-            _factory.ToDomain(dbAddress).Should().BeEquivalentTo(new DomainAddress
+            _factory.ToDomain(dbAddress).Should().BeEquivalentTo(new Address
             {
                 AddressLine1 = dbAddress.AddressLines,
                 PostCode = dbAddress.PostCode

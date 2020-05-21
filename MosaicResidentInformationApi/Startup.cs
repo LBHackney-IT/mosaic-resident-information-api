@@ -127,7 +127,7 @@ namespace MosaicResidentInformationApi
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAllResidentsUseCase, GetAllResidentsUseCase>();
-            services.AddScoped<IGetEntityByIdUseCase, GetEntityByIdUseCase>();
+            services.AddScoped<IGetResidentInformationByPersonIdUseCase, GetResidentInformationByPersonIdUseCase>();
 
         }
 

@@ -1,6 +1,6 @@
 namespace MosaicResidentInformationApi.V1.Boundary.Responses
 {
-    public class Address
+    public class AddressResponse
     {
         /// <example>
         /// 4 Green Road

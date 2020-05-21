@@ -21,7 +21,7 @@ namespace MosaicResidentInformationApi.V1.Boundary.Responses
         /// </example>
         public string DateOfBirth { get; set; }
         public List<Phone> PhoneNumber { get; set; }
-        public List<Address> AddressList { get; set; }
+        public List<AddressResponse> AddressList { get; set; }
         /// <example>
         /// 450 557 7104
         /// </example>

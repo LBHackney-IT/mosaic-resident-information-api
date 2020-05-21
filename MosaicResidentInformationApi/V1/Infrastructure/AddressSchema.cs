@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MosaicResidentInformationApi.V1.Infrastructure
 {
     [Table("dm_addresses")]
-    public class Address
+    public class AddressSchema
     {
         [Column("ref_addresses_people_id")]
         [MaxLength(9)]
