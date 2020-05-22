@@ -32,7 +32,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         [Test]
         public void ViewRecordTests()
         {
-            var residentInfo = new MosaicResidentInformationApi.V1.Domain.ResidentInformation()
+            var residentInfo = new ResidentInformation()
             {
                 FirstName = "test",
                 LastName = "test",

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using AutoFixture;
 using FluentAssertions;
 using Moq;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
@@ -20,6 +19,7 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
         [SetUp]
         public void SetUp()
         {
+            _mockMosaicGateway = new Mock<IMosaicGateway>();
             _classUnderTest = new GetAllResidentsUseCase(_mockMosaicGateway.Object);
         }
 
@@ -43,7 +43,6 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
                 FirstName = "test", LastName = "test", DateOfBirth = "01/01/2020"
             };
 
-            _mockMosaicGateway = new Mock<IMosaicGateway>();
             _mockMosaicGateway.Setup(x =>
                     x.GetAllResidentsSelect())
                 .Returns(new List<ResidentInformation>{ stubbedResident });
