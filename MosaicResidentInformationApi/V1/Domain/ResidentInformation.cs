@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.Infrastructure;
 
 namespace MosaicResidentInformationApi.V1.Domain
 {

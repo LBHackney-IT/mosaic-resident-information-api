@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="terraform\" />
-    <Folder Include="V1\Factories" />
   </ItemGroup>
 
 </Project>

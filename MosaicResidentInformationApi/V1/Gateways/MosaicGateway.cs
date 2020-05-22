@@ -11,21 +11,18 @@ namespace MosaicResidentInformationApi.V1.Gateways
     public class MosaicGateway : IMosaicGateway
     {
         private readonly MosaicContext _mosaicContext;
-        private readonly EntityFactory _entityFactory;
 
         public MosaicGateway(MosaicContext mosaicContext)
         {
             _mosaicContext = mosaicContext;
-            _entityFactory = new EntityFactory();
         }
 
         //Not tested
         public List<ResidentInformation> GetAllResidentsSelect()
         {
-            var results = _mosaicContext.Persons
-                            .ToList();
+            var results = _mosaicContext.Persons;
 
-            return _entityFactory.ToDomain(results);
+            return results.ToDomain();
         }
 
         public ResidentInformation GetEntityById(int id)
@@ -33,12 +30,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var databaseRecord = _mosaicContext.Persons.Find(id);
             if (databaseRecord == null) return null;
 
-            var person = _entityFactory.ToDomain(databaseRecord);
+            var person = databaseRecord.ToDomain();
 
             person.PhoneNumberList = GetPhoneNumbersByPersonId(databaseRecord);
 
             var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId == databaseRecord.Id);
-            person.AddressList = addressesForPerson.Select(s => _entityFactory.ToDomain(s)).ToList();
+            person.AddressList = addressesForPerson.Select(s => s.ToDomain()).ToList();
             person.Uprn = GetMostRecentUprn(addressesForPerson);
 
             return person;
@@ -59,13 +56,13 @@ namespace MosaicResidentInformationApi.V1.Gateways
         private List<MosaicResidentInformationApi.V1.Domain.Address> GetAddressesByPersonId(Person person)
         {
             var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId == person.Id);
-            return addressesForPerson.Select(s => _entityFactory.ToDomain(s)).ToList();
+            return addressesForPerson.Select(s => s.ToDomain()).ToList();
         }
 
         private List<PhoneNumber> GetPhoneNumbersByPersonId(Person person)
         {
             var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == person.Id);
-            return phoneNumbersForPerson.Select(n => _entityFactory.ToDomain(n)).ToList();
+            return phoneNumbersForPerson.Select(n => n.ToDomain()).ToList();
         }
     }
 }

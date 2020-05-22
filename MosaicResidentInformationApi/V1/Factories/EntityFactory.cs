@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Infrastructure;
@@ -8,9 +10,9 @@ using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInfor
 
 namespace MosaicResidentInformationApi.V1.Factories
 {
-    public class EntityFactory : AbstractEntityFactory
+    public static class EntityFactory
     {
-        public override ResidentInformation ToDomain(Person databaseEntity)
+        public static ResidentInformation ToDomain(this Person databaseEntity)
         {
             return new ResidentInformation
             {
@@ -20,14 +22,18 @@ namespace MosaicResidentInformationApi.V1.Factories
                 DateOfBirth = databaseEntity.DateOfBirth.ToString("O"),
             };
         }
+        public static List<ResidentInformation> ToDomain(this IEnumerable<Person> people)
+        {
+            return people.Select(p => p.ToDomain()).ToList();
+        }
 
-        public override PhoneNumber ToDomain(TelephoneNumber number)
+        public static PhoneNumber ToDomain(this TelephoneNumber number)
         {
             var canParseType = Enum.TryParse<PhoneType>(number.Type, out var type);
             return canParseType ? new PhoneNumber { Number = number.Number, Type = type } : null;
         }
 
-        public override Address ToDomain(DbAddress address)
+        public static Address ToDomain(this DbAddress address)
         {
             return new Address
             {

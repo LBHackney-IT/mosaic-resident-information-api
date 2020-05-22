@@ -15,20 +15,18 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
     public class EntityFactoryTests
     {
         private Fixture _fixture;
-        private EntityFactory _factory;
 
         [SetUp]
         public void SetUp()
         {
             _fixture = new Fixture();
-            _factory = new EntityFactory();
         }
 
         [Test]
         public void ItMapsAPersonDatabaseRecordIntoResidentInformationDomainObject()
         {
             var personRecord = TestHelper.CreateDatabasePersonEntity();
-            var domain = _factory.ToDomain(personRecord);
+            var domain = personRecord.ToDomain();
             domain.Should().BeEquivalentTo(new ResidentInformation
             {
                 FirstName = personRecord.FirstName,
@@ -42,7 +40,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
         public void IfPhoneTypeCanNotBeParsedReturnsNull()
         {
             var dbPhone = new TelephoneNumber { Number = "number", Type = "not a real type" };
-            _factory.ToDomain(dbPhone).Should().BeNull();
+            dbPhone.ToDomain().Should().BeNull();
         }
 
         [TestCase(PhoneType.Fax, "Fax")]
@@ -51,7 +49,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
         {
             var number = _fixture.Create<string>();
             var dbPhone = new TelephoneNumber { Number = number, Type = typeString };
-            _factory.ToDomain(dbPhone).Should().BeEquivalentTo(new PhoneNumber
+            dbPhone.ToDomain().Should().BeEquivalentTo(new PhoneNumber
             {
                 Number = number,
                 Type = type
@@ -63,7 +61,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
         {
             var dbAddress = _fixture.Create<Address>();
 
-            _factory.ToDomain(dbAddress).Should().BeEquivalentTo(new DomainAddress
+            dbAddress.ToDomain().Should().BeEquivalentTo(new DomainAddress
             {
                 AddressLine1 = dbAddress.AddressLines,
                 PostCode = dbAddress.PostCode
