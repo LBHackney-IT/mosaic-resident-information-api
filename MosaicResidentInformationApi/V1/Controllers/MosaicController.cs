@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.UseCase;
+using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 
 namespace MosaicResidentInformationApi.V1.Controllers
 {
@@ -26,9 +26,9 @@ namespace MosaicResidentInformationApi.V1.Controllers
         /// <response code="200">Success. Returns a list of matching residents information</response>
         [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
         [HttpGet]
-        public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp)
+        public IActionResult ListContacts()
         {
-            return Ok(_getAllResidentsUseCase.Execute(rqp));
+            return Ok(_getAllResidentsUseCase.Execute());
         }
 
         [HttpGet]

@@ -1,6 +1,7 @@
 using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Gateways;
+using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 
 namespace MosaicResidentInformationApi.V1.UseCase
 {
@@ -12,9 +13,10 @@ namespace MosaicResidentInformationApi.V1.UseCase
             _iMosaicGateway = iMosaicGateway;
         }
 
-        public ResidentInformationList Execute(ResidentQueryParam rqp)
+        public ResidentInformationList Execute()
         {
-            return _iMosaicGateway.GetAllResidentsSelect(rqp);
+            var residents = _iMosaicGateway.GetAllResidentsSelect();
+            return new ResidentInformationList();
         }
     }
 }

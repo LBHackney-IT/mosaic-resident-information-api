@@ -21,13 +21,13 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _entityFactory = new EntityFactory();
         }
 
-        public ResidentInformationList GetAllResidentsSelect(ResidentQueryParam rqp)
+        //Not tested
+        public List<ResidentInformation> GetAllResidentsSelect()
         {
-            List<MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation> results = _mosaicContext.ResidentDatabaseEntities
-                            .Where(res => res.FirstName.Equals(rqp.FirstName) || res.LastName.Equals(rqp.LastName))
+            var results = _mosaicContext.Persons
                             .ToList();
 
-            return new ResidentInformationList() { Residents = results };
+            return _entityFactory.ToDomain(results);
         }
 
         public ResidentInformation GetEntityById(int id)

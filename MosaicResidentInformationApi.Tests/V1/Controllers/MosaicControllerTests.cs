@@ -9,10 +9,8 @@ using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Domain;
 using System.Collections.Generic;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
-
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MosaicResidentInformationApi.Tests.V1.Controllers
 {
@@ -23,29 +21,18 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         private Mock<IGetAllResidentsUseCase> _mockGetAllResidentsUseCase;
         private Mock<IGetEntityByIdUseCase> _mockGetEntityByIdUseCase;
 
-        private Mock<IMosaicGateway> _mockIMosaicGateway;
-        private ResidentInformation _residentInfo;
-
         [SetUp]
         public void SetUp()
         {
-            _mockIMosaicGateway = new Mock<IMosaicGateway>();
             _mockGetAllResidentsUseCase = new Mock<IGetAllResidentsUseCase>();
             _mockGetEntityByIdUseCase = new Mock<IGetEntityByIdUseCase>();
             _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object, _mockGetEntityByIdUseCase.Object);
-            _residentInfo = new ResidentInformation()
-            {
-                FirstName = "test",
-                LastName = "test",
-                DateOfBirth = "01/01/2020"
-            };
         }
 
         [Test]
         public void ViewRecordTests()
         {
-            MosaicResidentInformationApi.V1.Domain.ResidentInformation residentInfo;
-            residentInfo = new MosaicResidentInformationApi.V1.Domain.ResidentInformation()
+            var residentInfo = new MosaicResidentInformationApi.V1.Domain.ResidentInformation()
             {
                 FirstName = "test",
                 LastName = "test",
@@ -63,26 +50,23 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         [Test]
         public void ListContacts()
         {
-            ResidentQueryParam residentQueryParam = new ResidentQueryParam()
+            var residentInfo = new List<ResidentInformation>()
             {
-                FirstName = "test",
-                LastName = "test1",
-                Address = "1 Hillman Street",
-                PostCode = "E8 1DY"
+                new ResidentInformation()
+                {
+                    FirstName = "test",
+                    LastName = "test",
+                    DateOfBirth = "01/01/2020"
+                }
             };
 
-            List<ResidentInformation> residentInfo = new List<ResidentInformation>()
-            {
-                _residentInfo
-            };
-
-            ResidentInformationList residentInformationList = new ResidentInformationList()
+            var residentInformationList = new ResidentInformationList()
             {
                 Residents = residentInfo
             };
 
-            _mockGetAllResidentsUseCase.Setup(x => x.Execute(residentQueryParam)).Returns(residentInformationList);
-            var response = _classUnderTest.ListContacts(residentQueryParam) as OkObjectResult;
+            _mockGetAllResidentsUseCase.Setup(x => x.Execute()).Returns(residentInformationList);
+            var response = _classUnderTest.ListContacts() as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
