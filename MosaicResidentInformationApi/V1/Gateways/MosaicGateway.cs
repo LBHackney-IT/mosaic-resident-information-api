@@ -1,5 +1,3 @@
-using MosaicResidentInformationApi.V1.Boundary.Responses;
-using MosaicResidentInformationApi.V1.Boundary.Requests;
 using System.Collections.Generic;
 using System.Linq;
 using MosaicResidentInformationApi.V1.Domain;

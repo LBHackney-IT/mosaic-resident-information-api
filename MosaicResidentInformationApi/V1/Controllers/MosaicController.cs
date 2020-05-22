@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
-using MosaicResidentInformationApi.V1.UseCase;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 
 namespace MosaicResidentInformationApi.V1.Controllers

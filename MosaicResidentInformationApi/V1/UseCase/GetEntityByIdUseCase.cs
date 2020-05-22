@@ -1,4 +1,3 @@
-using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 using ResidentInformationResponse = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;

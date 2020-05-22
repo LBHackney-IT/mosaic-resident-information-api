@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;

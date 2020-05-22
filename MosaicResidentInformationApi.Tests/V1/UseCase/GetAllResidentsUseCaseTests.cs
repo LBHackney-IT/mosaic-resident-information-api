@@ -35,17 +35,19 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
 
             var expectedResponse = new ResidentInformationList()
             {
-                Residents = new List<ResidentInformationResponse>{ expectedResponseResidents }
+                Residents = new List<ResidentInformationResponse> { expectedResponseResidents }
             };
 
             var stubbedResident = new ResidentInformation
             {
-                FirstName = "test", LastName = "test", DateOfBirth = "01/01/2020"
+                FirstName = "test",
+                LastName = "test",
+                DateOfBirth = "01/01/2020"
             };
 
             _mockMosaicGateway.Setup(x =>
                     x.GetAllResidentsSelect())
-                .Returns(new List<ResidentInformation>{ stubbedResident });
+                .Returns(new List<ResidentInformation> { stubbedResident });
 
             var response = _classUnderTest.Execute();
 

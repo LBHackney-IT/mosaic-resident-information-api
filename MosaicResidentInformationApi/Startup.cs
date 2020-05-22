@@ -122,7 +122,7 @@ namespace MosaicResidentInformationApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddSingleton<IMosaicGateway, MosaicGateway>();
+            services.AddScoped<IMosaicGateway, MosaicGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
