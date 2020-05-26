@@ -5,7 +5,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
 {
     public interface IMosaicGateway
     {
-        List<ResidentInformation> GetAllResidentsSelect();
+        List<ResidentInformation> GetAllResidents();
         ResidentInformation GetEntityById(int id);
     }
 }

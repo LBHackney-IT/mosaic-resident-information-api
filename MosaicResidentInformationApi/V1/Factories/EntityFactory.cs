@@ -16,6 +16,7 @@ namespace MosaicResidentInformationApi.V1.Factories
         {
             return new ResidentInformation
             {
+                MosaicId = databaseEntity.Id.ToString(),
                 FirstName = databaseEntity.FirstName,
                 LastName = databaseEntity.LastName,
                 NhsNumber = databaseEntity.NhsNumber.ToString(),

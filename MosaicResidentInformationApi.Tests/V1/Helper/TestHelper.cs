@@ -5,6 +5,7 @@ using MosaicResidentInformationApi.V1.Infrastructure;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
+using System;
 
 namespace MosaicResidentInformationApi.Tests.V1.Helper
 {
@@ -19,7 +20,10 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
         public static Person CreateDatabasePersonEntity()
         {
             var faker = new Fixture();
-            return faker.Create<Person>();
+            var fp = faker.Create<Person>();
+            fp.DateOfBirth = new DateTime
+                (fp.DateOfBirth.Year, fp.DateOfBirth.Month, fp.DateOfBirth.Day);
+            return fp;
         }
 
         public static Address CreateDatabaseAddressForPersonId(int personId)

@@ -18,7 +18,6 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             _fixture = new Fixture();
         }
 
-        [Ignore("In Progress")]
         [Test]
         public async Task ListResidentsReturnsAllResidentRecordInMosaic()
         {

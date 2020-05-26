@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MosaicResidentInformationApi.V1.Domain;
@@ -17,12 +18,22 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _mosaicContext = mosaicContext;
         }
 
-        //Not tested
-        public List<ResidentInformation> GetAllResidentsSelect()
+        public List<ResidentInformation> GetAllResidents()
         {
-            var results = _mosaicContext.Persons;
+            var persons = _mosaicContext.Persons.ToList();
 
-            return results.ToDomain();
+            var personDomain = persons.ToDomain();
+
+            foreach (var person in personDomain)
+            {
+                var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId.ToString() == person.MosaicId);
+                person.AddressList = addressesForPerson.Any() ? addressesForPerson.Select(s => s.ToDomain()).ToList() : null;
+                var phoneNumbersForPerson = GetPhoneNumbersByPersonId(Int32.Parse(person.MosaicId));
+                person.PhoneNumberList = phoneNumbersForPerson.Any() ? phoneNumbersForPerson : null;
+                person.Uprn = GetMostRecentUprn(addressesForPerson);
+            }
+
+            return personDomain;
         }
 
         public ResidentInformation GetEntityById(int id)
@@ -32,7 +43,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
 
             var person = databaseRecord.ToDomain();
 
-            person.PhoneNumberList = GetPhoneNumbersByPersonId(databaseRecord);
+            person.PhoneNumberList = GetPhoneNumbersByPersonId(databaseRecord.Id);
 
             var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId == databaseRecord.Id);
             person.AddressList = addressesForPerson.Select(s => s.ToDomain()).ToList();
@@ -53,15 +64,9 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return addressesForPerson.OrderByDescending(a => a.EndDate).First().Uprn.ToString();
         }
 
-        private List<MosaicResidentInformationApi.V1.Domain.Address> GetAddressesByPersonId(Person person)
+        private List<PhoneNumber> GetPhoneNumbersByPersonId(int id)
         {
-            var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId == person.Id);
-            return addressesForPerson.Select(s => s.ToDomain()).ToList();
-        }
-
-        private List<PhoneNumber> GetPhoneNumbersByPersonId(Person person)
-        {
-            var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == person.Id);
+            var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == id);
             return phoneNumbersForPerson.Select(n => n.ToDomain()).ToList();
         }
     }

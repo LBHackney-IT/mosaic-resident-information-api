@@ -5,8 +5,10 @@ using FluentAssertions;
 using MosaicResidentInformationApi.Tests.V1.Helper;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
+using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using NUnit.Framework;
+using System.Linq;
 using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;
 
@@ -100,6 +102,84 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
                 new PhoneNumber {Number = phoneNumber.Number, Type = PhoneType.Primary}
             });
         }
+
+        [Test]
+        public void GetAllResidents_IfThereAreNoResidents_ReturnsAnEmptyList()
+        {
+            _classUnderTest.GetAllResidents().Should().BeEmpty();
+        }
+
+        [Test]
+        public void GetAllResident_IfThereAreResidentsWillReturnThem()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+            var databaseEntity1 = AddPersonRecordToDatabase();
+            var databaseEntity2 = AddPersonRecordToDatabase();
+
+            var listOfPersons = _classUnderTest.GetAllResidents();
+
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity1.ToDomain());
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity2.ToDomain());
+        }
+
+        [Test]
+        public void GetAllResidents_IfThereAreResidentAddressesWillReturnThem()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents();
+
+            listOfPersons
+                .Where(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
+                .First()
+                .AddressList
+                .Should().ContainEquivalentOf(address.ToDomain());
+        }
+
+        [Test]
+        public void GetAllResidents_IfThereAreResidentPhoneNumbersWillReturnThem()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var phoneNumber = TestHelper.CreateDatabaseTelephoneNumberForPersonId(databaseEntity.Id);
+            var type = PhoneType.Primary.ToString();
+            phoneNumber.Type = type;
+            MosaicContext.TelephoneNumbers.Add(phoneNumber);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents();
+
+            listOfPersons
+                .Where(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
+                .First()
+                .PhoneNumberList
+                .Should().ContainEquivalentOf(phoneNumber.ToDomain());
+        }
+
+        [Test]
+        public void GetAllResidents_ReturnsResidentsUPRN()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents();
+
+            listOfPersons
+                .Where(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
+                .First()
+                .Uprn
+                .Should().Be(address.Uprn.ToString());
+        }
+
+
 
         private Person AddPersonRecordToDatabase()
         {

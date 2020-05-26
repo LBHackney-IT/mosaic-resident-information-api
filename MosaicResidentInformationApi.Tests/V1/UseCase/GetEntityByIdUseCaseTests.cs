@@ -5,6 +5,8 @@ using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase;
 using NUnit.Framework;
 using ResidentInformationResponse = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
+using AutoFixture;
+using MosaicResidentInformationApi.V1.Factories;
 
 namespace MosaicResidentInformationApi.Tests.V1.UseCase
 {
@@ -13,6 +15,7 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
     {
         private Mock<IMosaicGateway> _mockMosaicGateway;
         private GetEntityByIdUseCase _classUnderTest;
+        private Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -25,25 +28,14 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
         [Test]
         public void ReturnsResidentInformationList()
         {
-            var stubbedResidentInfo = new ResidentInformation()
-            {
-                FirstName = "test",
-                LastName = "test",
-                DateOfBirth = "01/01/2020"
-            };
+            var stubbedResidentInfo = _fixture.Create<ResidentInformation>();
 
             _mockMosaicGateway.Setup(x =>
                     x.GetEntityById(12345))
                 .Returns(stubbedResidentInfo);
 
             var response = _classUnderTest.Execute(12345);
-
-            var expectedResponse = new ResidentInformationResponse
-            {
-                FirstName = "test",
-                LastName = "test",
-                DateOfBirth = "01/01/2020"
-            };
+            var expectedResponse = stubbedResidentInfo.ToResponse();
 
             response.Should().NotBeNull();
             response.Should().BeEquivalentTo(expectedResponse);

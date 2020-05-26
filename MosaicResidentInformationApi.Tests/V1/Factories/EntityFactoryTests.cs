@@ -29,6 +29,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
             var domain = personRecord.ToDomain();
             domain.Should().BeEquivalentTo(new ResidentInformation
             {
+                MosaicId = personRecord.Id.ToString(),
                 FirstName = personRecord.FirstName,
                 LastName = personRecord.LastName,
                 NhsNumber = personRecord.NhsNumber.ToString(),

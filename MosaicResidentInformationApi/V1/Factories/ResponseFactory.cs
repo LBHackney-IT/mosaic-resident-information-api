@@ -34,13 +34,14 @@ namespace MosaicResidentInformationApi.V1.Factories
         {
             return phoneNumbers.Select(number => new Phone
             {
-                PhoneNumber = number.Number, PhoneType = number.Type
+                PhoneNumber = number.Number,
+                PhoneType = number.Type
             }).ToList();
         }
 
         private static List<AddressResponse> ToResponse(this List<Address> addresses)
         {
-            return addresses.Select(add =>  new AddressResponse
+            return addresses.Select(add => new AddressResponse
             {
                 AddressLine1 = add.AddressLine1,
                 AddressLine2 = add.AddressLine2,

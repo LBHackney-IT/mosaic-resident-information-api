@@ -6,6 +6,7 @@ namespace MosaicResidentInformationApi.V1.Domain
 {
     public class ResidentInformation
     {
+        public string MosaicId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Uprn { get; set; }
