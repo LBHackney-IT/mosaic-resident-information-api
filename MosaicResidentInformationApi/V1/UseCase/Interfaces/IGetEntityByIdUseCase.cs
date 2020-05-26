@@ -1,6 +1,6 @@
-using MosaicResidentInformationApi.V1.Domain;
+using MosaicResidentInformationApi.V1.Boundary.Responses;
 
-namespace MosaicResidentInformationApi.V1.UseCase
+namespace MosaicResidentInformationApi.V1.UseCase.Interfaces
 {
     public interface IGetEntityByIdUseCase
     {

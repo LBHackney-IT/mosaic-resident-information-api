@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using MosaicResidentInformationApi.V1.UseCase;
+using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 using MosaicResidentInformationApi.Versioning;
 using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -121,7 +122,7 @@ namespace MosaicResidentInformationApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddSingleton<IMosaicGateway, MosaicGateway>();
+            services.AddScoped<IMosaicGateway, MosaicGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)

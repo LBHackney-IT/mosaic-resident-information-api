@@ -25,8 +25,7 @@ namespace MosaicResidentInformationApi.Tests
                 .UseStartup<Startup>();
             builder.ConfigureServices(services =>
             {
-                services.AddDbContext<MosaicContext>(options => options.UseNpgsql(_connection),
-                    ServiceLifetime.Singleton);
+                services.AddDbContext<MosaicContext>(options => options.UseNpgsql(_connection), ServiceLifetime.Singleton);
 
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<MosaicContext>();
