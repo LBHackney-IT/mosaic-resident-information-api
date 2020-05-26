@@ -21,11 +21,13 @@ namespace MosaicResidentInformationApi.Tests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureAppConfiguration(b => b.AddEnvironmentVariables())
-                .UseStartup<Startup>();
+            builder.ConfigureAppConfiguration(b => b.AddEnvironmentVariables());
             builder.ConfigureServices(services =>
             {
-                services.AddDbContext<MosaicContext>(options => options.UseNpgsql(_connection), ServiceLifetime.Singleton);
+                var dbBuilder = new DbContextOptionsBuilder();
+                dbBuilder.UseNpgsql(_connection);
+                var context = new MosaicContext(dbBuilder.Options);
+                services.AddSingleton(context);
 
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<MosaicContext>();

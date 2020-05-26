@@ -1,5 +1,6 @@
 using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Npgsql;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace MosaicResidentInformationApi.Tests
 
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
-        private NpgsqlTransaction _transaction;
+        private IDbContextTransaction _transaction;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -25,7 +26,7 @@ namespace MosaicResidentInformationApi.Tests
             npgsqlCommand.ExecuteNonQuery();
 
             var builder = new DbContextOptionsBuilder();
-            builder.UseNpgsql(ConnectionString.TestDatabase());
+            builder.UseNpgsql(_connection);
             MosaicContext = new MosaicContext(builder.Options);
             MosaicContext.Database.EnsureCreated();
         }
@@ -36,7 +37,7 @@ namespace MosaicResidentInformationApi.Tests
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
 
-            _transaction = _connection.BeginTransaction();
+            _transaction = MosaicContext.Database.BeginTransaction();
         }
 
         [TearDown]
