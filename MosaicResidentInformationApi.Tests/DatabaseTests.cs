@@ -10,6 +10,7 @@ namespace MosaicResidentInformationApi.Tests
     public class DatabaseTests
     {
         protected MosaicContext MosaicContext;
+        private IDbContextTransaction _transaction;
 
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
@@ -24,13 +25,14 @@ namespace MosaicResidentInformationApi.Tests
         [SetUp]
         public void SetUp()
         {
-            MosaicContext.Database.BeginTransaction();
+            _transaction = MosaicContext.Database.BeginTransaction();
         }
 
         [TearDown]
         public void TearDown()
         {
-            MosaicContext.Database.RollbackTransaction();
+            _transaction.Rollback();
+            _transaction.Dispose();
         }
     }
 }

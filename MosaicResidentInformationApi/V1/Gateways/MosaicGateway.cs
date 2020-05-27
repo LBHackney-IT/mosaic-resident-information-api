@@ -40,7 +40,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
         {
             var databaseRecord = _mosaicContext.Persons.Find(id);
             if (databaseRecord == null) return null;
-
             var person = databaseRecord.ToDomain();
 
             person.PhoneNumberList = GetPhoneNumbersByPersonId(databaseRecord.Id);
