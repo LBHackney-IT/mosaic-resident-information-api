@@ -7,6 +7,8 @@ using NUnit.Framework;
 
 namespace MosaicResidentInformationApi.Tests
 {
+    [NonParallelizable]
+    [TestFixture]
     public class DatabaseTests
     {
         protected MosaicContext MosaicContext;

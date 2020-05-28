@@ -7,6 +7,8 @@ using NUnit.Framework;
 
 namespace MosaicResidentInformationApi.Tests
 {
+    [NonParallelizable]
+    [TestFixture]
     public class E2ETests<TStartup> where TStartup : class
     {
         protected HttpClient Client;
