@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
@@ -18,9 +19,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _mosaicContext = mosaicContext;
         }
 
-        public List<ResidentInformation> GetAllResidents()
+        public List<ResidentInformation> GetAllResidents(string firstname = null, string lastname = null)
         {
-            var persons = _mosaicContext.Persons.ToList();
+            var persons = _mosaicContext.Persons
+                .Where(p => string.IsNullOrEmpty(firstname) ? true : p.FirstName.ToLower().Equals(firstname.ToLower()))
+                .Where(p => string.IsNullOrEmpty(lastname) ? true : p.LastName.ToLower().Equals(lastname.ToLower()))
+                .ToList();
 
             var personDomain = persons.ToDomain();
 
@@ -32,7 +36,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 person.PhoneNumberList = phoneNumbersForPerson.Any() ? phoneNumbersForPerson : null;
                 person.Uprn = GetMostRecentUprn(addressesForPerson);
             }
-
             return personDomain;
         }
 

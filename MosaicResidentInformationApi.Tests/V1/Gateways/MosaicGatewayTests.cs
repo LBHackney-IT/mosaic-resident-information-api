@@ -179,11 +179,37 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
                 .Should().Be(address.Uprn.ToString());
         }
 
+        [Test]
+        public void GetAllResidentsWithFirstNameQueryParameter_ReturnsMatchingResident()
+        {
+            var databaseEntity = AddPersonRecordToDatabase(firstname: "ciasom");
+            var databaseEntity1 = AddPersonRecordToDatabase(firstname: "shape");
+            var databaseEntity2 = AddPersonRecordToDatabase(firstname: "Ciasom");
 
+            var listOfPersons = _classUnderTest.GetAllResidents(firstname: "ciasom");
+            listOfPersons.Count.Should().Be(2);
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity2.ToDomain());
+        }
 
-        private Person AddPersonRecordToDatabase()
+        [Test]
+        public void GetAllResidentsWithLastNameQueryParameter_ReturnsMatchingResident()
+        {
+            var databaseEntity = AddPersonRecordToDatabase(lastname: "tessellate");
+            var databaseEntity1 = AddPersonRecordToDatabase(lastname: "square");
+            var databaseEntity2 = AddPersonRecordToDatabase(lastname: "Tessellate");
+
+            var listOfPersons = _classUnderTest.GetAllResidents(lastname: "tessellate");
+            listOfPersons.Count.Should().Be(2);
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
+            listOfPersons.Should().ContainEquivalentOf(databaseEntity2.ToDomain());
+        }
+
+        private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null)
         {
             var databaseEntity = TestHelper.CreateDatabasePersonEntity();
+            databaseEntity.FirstName = firstname ?? databaseEntity.FirstName;
+            databaseEntity.LastName = lastname ?? databaseEntity.LastName;
             MosaicContext.Persons.Add(databaseEntity);
             MosaicContext.SaveChanges();
             return databaseEntity;

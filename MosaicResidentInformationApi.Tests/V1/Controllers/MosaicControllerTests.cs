@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
+using MosaicResidentInformationApi.V1.Boundary.Requests;
 
 namespace MosaicResidentInformationApi.Tests.V1.Controllers
 {
@@ -60,9 +61,14 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
             {
                 Residents = residentInfo
             };
+            var rqp = new ResidentQueryParam
+            {
+                FirstName = "Ciasom",
+                LastName = "Tessellate",
+            };
 
-            _mockGetAllResidentsUseCase.Setup(x => x.Execute()).Returns(residentInformationList);
-            var response = _classUnderTest.ListContacts() as OkObjectResult;
+            _mockGetAllResidentsUseCase.Setup(x => x.Execute(rqp)).Returns(residentInformationList);
+            var response = _classUnderTest.ListContacts(rqp) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);

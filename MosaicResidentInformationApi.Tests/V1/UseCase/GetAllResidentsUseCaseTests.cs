@@ -10,6 +10,7 @@ using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInfor
 using AutoFixture;
 using MosaicResidentInformationApi.V1.Factories;
 using System.Linq;
+using MosaicResidentInformationApi.V1.Boundary.Requests;
 
 namespace MosaicResidentInformationApi.Tests.V1.UseCase
 {
@@ -37,10 +38,15 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
             };
 
             _mockMosaicGateway.Setup(x =>
-                    x.GetAllResidents())
+                    x.GetAllResidents("ciasom", "tessellate"))
                 .Returns(stubbedResidents.ToList());
+            var rqp = new ResidentQueryParam
+            {
+                FirstName = "ciasom",
+                LastName = "tessellate",
+            };
 
-            var response = _classUnderTest.Execute();
+            var response = _classUnderTest.Execute(rqp);
 
             response.Should().NotBeNull();
             response.Should().BeEquivalentTo(expectedResponse);
