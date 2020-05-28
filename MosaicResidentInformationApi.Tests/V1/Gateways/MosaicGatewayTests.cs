@@ -208,6 +208,20 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
         }
 
         [Test]
+        public void GetAllResidentsWithNameQueryParameters_ReturnsMatchingResidentOnlyOnce()
+        {
+            var databaseEntity = AddPersonRecordToDatabase(firstname: "ciasom", lastname: "Tessellate");
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(firstname: "ciasom", lastname: "Tessellate");
+            listOfPersons.Count.Should().Be(1);
+            listOfPersons.First().MosaicId.Should().Be(databaseEntity.Id.ToString());
+        }
+
+        [Test]
         public void GetAllResidentsWithPostCodeQueryParameter_ReturnsMatchingResident()
         {
             var databaseEntity = AddPersonRecordToDatabase();
@@ -315,6 +329,30 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
                 .Should().ContainEquivalentOf(address.ToDomain());
         }
 
+        [TestCase("1 My Street")]
+        [TestCase("My Street")]
+        [TestCase("1 My Street, Hackney, London")]
+        [TestCase("Hackney")]
+        public void GetAllResidentsWithAddressQueryParameter_ReturnsMatchingResident(string addressQuery)
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+            var databaseEntity1 = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, address: "1 My Street, Hackney, London");
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var address1 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity1.Id, address: "5 Another Street, Lambeth, London");
+            MosaicContext.Addresses.Add(address1);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(address: addressQuery).ToList();
+             listOfPersons.Count.Should().Be(1);
+            listOfPersons
+                .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
+                .AddressList
+                .Should().ContainEquivalentOf(address.ToDomain());
+        }
 
         private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null)
         {

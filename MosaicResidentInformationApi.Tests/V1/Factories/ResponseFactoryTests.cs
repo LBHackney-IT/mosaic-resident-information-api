@@ -70,5 +70,32 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
             };
             domain.ToResponse().Should().BeEquivalentTo(expectedResponse);
         }
+
+        [Test]
+        public void CanMapResidentInformationWithOnlyPersonalInformationFromDomainToResponse()
+        {
+            var domain = new ResidentInformation
+            {
+                Uprn = "uprn",
+                AddressList = null,
+                FirstName = "Name",
+                LastName = "Last",
+                NhsNumber = "nhs",
+                DateOfBirth = "DOB",
+                PhoneNumberList = null,
+            };
+
+            var expectedResponse = new ResidentInformationResponse
+            {
+                Uprn = "uprn",
+                AddressList = null,
+                FirstName = "Name",
+                LastName = "Last",
+                NhsNumber = "nhs",
+                DateOfBirth = "DOB",
+                PhoneNumber = null,
+            };
+            domain.ToResponse().Should().BeEquivalentTo(expectedResponse);
+        }
     }
 }

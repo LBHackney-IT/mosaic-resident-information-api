@@ -41,7 +41,7 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 
 
         [Test]
-        public async Task FirstNameLastNameQueryParamaetersListResidentsReturnsMatchingResidentRecordInMosaic()
+        public async Task FirstNameLastNameQueryParametersListResidentsReturnsMatchingResidentRecordInMosaic()
         {
             var expectedResidentResponseOne = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, firstname: "ciasom", lastname: "tessellate");
             var expectedResidentResponseTwo = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, firstname: "ciasom", lastname: "shape");

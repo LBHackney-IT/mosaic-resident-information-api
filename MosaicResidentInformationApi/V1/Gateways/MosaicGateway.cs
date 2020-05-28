@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
@@ -19,10 +18,11 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _mosaicContext = mosaicContext;
         }
 
-        public List<ResidentInformation> GetAllResidents(string firstname = null, string lastname = null, string postcode = null)
+        public List<ResidentInformation> GetAllResidents(string firstname = null, string lastname = null, string postcode = null, string address = null)
         {
             var addressesFilteredByPostcode = _mosaicContext.Addresses
                 .Include(p => p.Person)
+                .Where(a => string.IsNullOrEmpty(address) || a.AddressLines.ToLower().Replace(" ", "").Contains(StripString(address)))
                 .Where(a => string.IsNullOrEmpty(postcode) || a.PostCode.ToLower().Replace(" ", "").Equals(StripString(postcode)))
                 .Where(a => string.IsNullOrEmpty(firstname) || a.Person.FirstName.ToLower().Replace(" ", "").Equals(StripString(firstname)))
                 .Where(a => string.IsNullOrEmpty(lastname) || a.Person.LastName.ToLower().Replace(" ", "").Equals(StripString(lastname)))
@@ -32,7 +32,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .GroupBy(address => address.Person, MapPersonAndAddressesToResidentInformation)
                 .ToList();
 
-            var peopleWithNoAddress = string.IsNullOrEmpty(postcode)
+            var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
                 ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode)
                 : new List<ResidentInformation>();
 
@@ -58,7 +58,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .Where(p => string.IsNullOrEmpty(firstname) || p.FirstName.ToLower().Equals(firstname.ToLower()))
                 .Where(p => string.IsNullOrEmpty(lastname) || p.LastName.ToLower().Equals(lastname.ToLower()))
                 .ToList()
-                .Where(p => addressesFilteredByPostcode.All(add => add.PersonId == p.Id))
+                .Where(p => addressesFilteredByPostcode.All(add => add.PersonId != p.Id))
                 .Select(person =>
                 {
                     var domainPerson = person.ToDomain();

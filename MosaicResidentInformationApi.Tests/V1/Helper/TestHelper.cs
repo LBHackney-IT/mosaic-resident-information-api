@@ -26,7 +26,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
             return fp;
         }
 
-        public static Address CreateDatabaseAddressForPersonId(int personId, string postcode = null)
+        public static Address CreateDatabaseAddressForPersonId(int personId, string postcode = null, string address = null)
         {
             var faker = new Fixture();
 
@@ -36,6 +36,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
                 .Create();
 
             fa.PostCode = postcode ?? fa.PostCode;
+            fa.AddressLines = address ?? fa.AddressLines;
             return fa;
         }
 
