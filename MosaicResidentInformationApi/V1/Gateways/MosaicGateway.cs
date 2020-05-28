@@ -19,42 +19,75 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _mosaicContext = mosaicContext;
         }
 
-        public List<ResidentInformation> GetAllResidents(string firstname = null, string lastname = null)
+        public List<ResidentInformation> GetAllResidents(string firstname = null, string lastname = null, string postcode = null)
         {
-            var persons = _mosaicContext.Persons
-                .Where(p => string.IsNullOrEmpty(firstname) ? true : p.FirstName.ToLower().Equals(firstname.ToLower()))
-                .Where(p => string.IsNullOrEmpty(lastname) ? true : p.LastName.ToLower().Equals(lastname.ToLower()))
+            var addressesFilteredByPostcode = _mosaicContext.Addresses
+                .Include(p => p.Person)
+                .Where(a => string.IsNullOrEmpty(postcode) || a.PostCode.ToLower().Replace(" ", "").Equals(StripString(postcode)))
+                .Where(a => string.IsNullOrEmpty(firstname) || a.Person.FirstName.ToLower().Replace(" ", "").Equals(StripString(firstname)))
+                .Where(a => string.IsNullOrEmpty(lastname) || a.Person.LastName.ToLower().Replace(" ", "").Equals(StripString(lastname)))
                 .ToList();
 
-            var personDomain = persons.ToDomain();
+            var peopleWithAddresses = addressesFilteredByPostcode
+                .GroupBy(address => address.Person, MapPersonAndAddressesToResidentInformation)
+                .ToList();
 
-            foreach (var person in personDomain)
-            {
-                var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId.ToString() == person.MosaicId);
-                person.AddressList = addressesForPerson.Any() ? addressesForPerson.Select(s => s.ToDomain()).ToList() : null;
-                var phoneNumbersForPerson = GetPhoneNumbersByPersonId(Int32.Parse(person.MosaicId));
-                person.PhoneNumberList = phoneNumbersForPerson.Any() ? phoneNumbersForPerson : null;
-                person.Uprn = GetMostRecentUprn(addressesForPerson);
-            }
-            return personDomain;
+            var peopleWithNoAddress = string.IsNullOrEmpty(postcode)
+                ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode)
+                : new List<ResidentInformation>();
+
+            var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
+
+            return allPeople.Select(AttachPhoneNumberToPerson).ToList();
         }
 
         public ResidentInformation GetEntityById(int id)
         {
             var databaseRecord = _mosaicContext.Persons.Find(id);
             if (databaseRecord == null) return null;
-            var person = databaseRecord.ToDomain();
-
-            person.PhoneNumberList = GetPhoneNumbersByPersonId(databaseRecord.Id);
 
             var addressesForPerson = _mosaicContext.Addresses.Where(a => a.PersonId == databaseRecord.Id);
-            person.AddressList = addressesForPerson.Select(s => s.ToDomain()).ToList();
-            person.Uprn = GetMostRecentUprn(addressesForPerson);
+            var person = MapPersonAndAddressesToResidentInformation(databaseRecord, addressesForPerson);
+            AttachPhoneNumberToPerson(person);
 
             return person;
         }
+        private List<ResidentInformation> QueryPeopleWithNoAddressByName(string firstname, string lastname, List<Address> addressesFilteredByPostcode)
+        {
+            return _mosaicContext.Persons
+                .Where(p => string.IsNullOrEmpty(firstname) || p.FirstName.ToLower().Equals(firstname.ToLower()))
+                .Where(p => string.IsNullOrEmpty(lastname) || p.LastName.ToLower().Equals(lastname.ToLower()))
+                .ToList()
+                .Where(p => addressesFilteredByPostcode.All(add => add.PersonId == p.Id))
+                .Select(person =>
+                {
+                    var domainPerson = person.ToDomain();
+                    domainPerson.AddressList = null;
+                    return domainPerson;
+                }).ToList();
+        }
 
-        private static string GetMostRecentUprn(IQueryable<Address> addressesForPerson)
+        private ResidentInformation AttachPhoneNumberToPerson(ResidentInformation person)
+        {
+            var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers
+                .Where(n => n.PersonId == int.Parse(person.MosaicId));
+            person.PhoneNumberList = phoneNumbersForPerson.Any() ? phoneNumbersForPerson.Select(n => n.ToDomain()).ToList() : null;
+            return person;
+        }
+
+        private static ResidentInformation MapPersonAndAddressesToResidentInformation(Person person,
+            IEnumerable<Address> addresses)
+        {
+            var resident = person.ToDomain();
+            var addressesDomain = addresses.Select(address => address.ToDomain()).ToList();
+            resident.Uprn = GetMostRecentUprn(addresses);
+            resident.AddressList = addressesDomain;
+            resident.AddressList = addressesDomain.Any()
+                ? addressesDomain
+                : null;
+            return resident;
+        }
+        private static string GetMostRecentUprn(IEnumerable<Address> addressesForPerson)
         {
             if (!addressesForPerson.Any()) return null;
             var currentAddress = addressesForPerson.FirstOrDefault(a => a.EndDate == null);
@@ -66,10 +99,9 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return addressesForPerson.OrderByDescending(a => a.EndDate).First().Uprn.ToString();
         }
 
-        private List<PhoneNumber> GetPhoneNumbersByPersonId(int id)
+        private static string StripString(string str)
         {
-            var phoneNumbersForPerson = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == id);
-            return phoneNumbersForPerson.Select(n => n.ToDomain()).ToList();
+            return str?.ToLower().Replace(" ", "");
         }
     }
 }

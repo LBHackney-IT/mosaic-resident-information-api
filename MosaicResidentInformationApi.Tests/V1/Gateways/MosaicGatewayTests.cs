@@ -9,11 +9,13 @@ using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using NUnit.Framework;
 using System.Linq;
+using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;
 
 namespace MosaicResidentInformationApi.Tests.V1.Gateways
 {
+    [NonParallelizable]
     [TestFixture]
     public class MosaicGatewayTests : DatabaseTests
     {
@@ -204,6 +206,115 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
             listOfPersons.Should().ContainEquivalentOf(databaseEntity2.ToDomain());
         }
+
+        [Test]
+        public void GetAllResidentsWithPostCodeQueryParameter_ReturnsMatchingResident()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+            var databaseEntity1 = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, "E8 1DY");
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var address1 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity1.Id, "E8 5TG");
+            MosaicContext.Addresses.Add(address1);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY");
+            listOfPersons.Count.Should().Be(1);
+            listOfPersons
+                .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
+                .AddressList
+                .Should().ContainEquivalentOf(address.ToDomain());
+        }
+
+        [Test]
+        public void GetAllResidentsWithPostCodeQueryParameter_WhenAPersonHasTwoAddress_ReturnsOneRecordWithAListOfAddresses()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, "E8 1DY");
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var address1 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, "E8 1DY");
+            MosaicContext.Addresses.Add(address1);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY").ToList();
+            listOfPersons.Count.Should().Be(1);
+            listOfPersons
+                .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
+                .AddressList.Count
+                .Should().Be(2);
+        }
+
+        [Test]
+        public void GetAllResidentsWithPostCodeQueryParameter_ReturnsPhoneNumberAndUprnWithResidentInformation()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, "E8 1DY");
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var phoneNumber = TestHelper.CreateDatabaseTelephoneNumberForPersonId(databaseEntity.Id);
+            MosaicContext.TelephoneNumbers.Add(phoneNumber);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY").ToList();
+
+            var personUnderTest = listOfPersons
+                .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()));
+
+            personUnderTest.PhoneNumberList.Should().ContainEquivalentOf(phoneNumber.ToDomain());
+            personUnderTest.Uprn.Should().Be(address.Uprn.ToString());
+        }
+
+        [Test]
+        public void GetAllResidentsWithNameAndPostCodeQueryParameter_ReturnsMatchingResident()
+        {
+            var databaseEntity = AddPersonRecordToDatabase(firstname: "ciasom");
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, "E8 1DY");
+
+            var databaseEntity1 = AddPersonRecordToDatabase(firstname: "wrong name");
+            var address1 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity1.Id, "E8 1DY");
+
+            var databaseEntity2 = AddPersonRecordToDatabase(firstname: "ciasom");
+            var address2 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity2.Id, "E8 5RT");
+
+            MosaicContext.Addresses.AddRange(new List<Address> { address, address1, address2 });
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(firstname: "ciasom", postcode: "E8 1DY").ToList();
+
+            listOfPersons.Count.Should().Be(1);
+            listOfPersons.First().MosaicId.Should().Be(databaseEntity.Id.ToString());
+            listOfPersons.First()
+                .AddressList
+                .Should().ContainEquivalentOf(address.ToDomain());
+        }
+
+        [TestCase("E81DY")]
+        [TestCase("e8 1DY")]
+        public void GetAllResidentsWithPostCodeQueryParameter_IgnoresFormatting(string postcode)
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id, postcode);
+            MosaicContext.Addresses.Add(address);
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY");
+
+            listOfPersons.Count.Should().Be(1);
+
+            listOfPersons.First().MosaicId.Should().Be(databaseEntity.Id.ToString());
+            listOfPersons.First().AddressList
+                .Should().ContainEquivalentOf(address.ToDomain());
+        }
+
 
         private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null)
         {

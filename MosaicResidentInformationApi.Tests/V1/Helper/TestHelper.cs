@@ -26,14 +26,17 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
             return fp;
         }
 
-        public static Address CreateDatabaseAddressForPersonId(int personId)
+        public static Address CreateDatabaseAddressForPersonId(int personId, string postcode = null)
         {
             var faker = new Fixture();
 
-            return faker.Build<Address>()
+            var fa = faker.Build<Address>()
                 .With(add => add.PersonId, personId)
                 .Without(add => add.Person)
                 .Create();
+
+            fa.PostCode = postcode ?? fa.PostCode;
+            return fa;
         }
 
         public static TelephoneNumber CreateDatabaseTelephoneNumberForPersonId(int personId)
