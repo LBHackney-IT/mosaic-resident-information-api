@@ -11,18 +11,14 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
 {
     public static class TestHelper
     {
-        public static ResidentInformation CreateDomainResident()
-        {
-            var faker = new Fixture();
-            return faker.Create<ResidentInformation>();
-        }
-
-        public static Person CreateDatabasePersonEntity()
+        public static Person CreateDatabasePersonEntity(string firstname = null, string lastname = null)
         {
             var faker = new Fixture();
             var fp = faker.Create<Person>();
             fp.DateOfBirth = new DateTime
                 (fp.DateOfBirth.Year, fp.DateOfBirth.Month, fp.DateOfBirth.Day);
+            fp.FirstName = firstname ?? fp.FirstName;
+            fp.LastName = lastname ?? fp.LastName;
             return fp;
         }
 

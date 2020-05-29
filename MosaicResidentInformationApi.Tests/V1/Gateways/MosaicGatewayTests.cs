@@ -356,9 +356,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
 
         private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null)
         {
-            var databaseEntity = TestHelper.CreateDatabasePersonEntity();
-            databaseEntity.FirstName = firstname ?? databaseEntity.FirstName;
-            databaseEntity.LastName = lastname ?? databaseEntity.LastName;
+            var databaseEntity = TestHelper.CreateDatabasePersonEntity(firstname, lastname);
             MosaicContext.Persons.Add(databaseEntity);
             MosaicContext.SaveChanges();
             return databaseEntity;
