@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -69,7 +70,7 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var nonMatchingResident2 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, addressLines: "1 Seasame street, Hackney, LDN");
             var nonMatchingResident3 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext);
 
-            var response = Client.GetAsync("api/v1/residents?post_code=er1rr&address=1 Seasame street");
+            var response = Client.GetAsync("api/v1/residents?postcode=er1rr&address=1 Seasame street");
 
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
@@ -77,6 +78,7 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var content = response.Result.Content;
             var stringContent = await content.ReadAsStringAsync();
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
+            var r = convertedResponse.Residents.ToList();
 
             convertedResponse.Residents.Count.Should().Be(2);
             convertedResponse.Residents.Should().ContainEquivalentOf(matchingResidentOne);
@@ -86,7 +88,24 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
         [Test]
         public async Task UsingAllQueryParametersReturnsMatchingResidentsRecordsFromMosaic()
         {
+            var matchingResidentOne = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "ER 1RR",
+                addressLines: "1 Seasame street, Hackney, LDN", firstname: "ciasom", lastname: "shape");
+            var nonmatchingResidentTwo = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "ER 1RR", addressLines: "1 Seasame street", lastname: "shap");
+            var nonMatchingResident1 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "E4 1RR", firstname: "ciasom");
+            var nonMatchingResident2 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, addressLines: "1 Seasame street, Hackney, LDN");
+            var nonMatchingResident3 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext);
 
+            var response = Client.GetAsync("api/v1/residents?postcode=er1rr&address=1 Seasame street&first_name=ciasom&last_name=shape");
+
+            var statusCode = response.Result.StatusCode;
+            statusCode.Should().Be(200);
+
+            var content = response.Result.Content;
+            var stringContent = await content.ReadAsStringAsync();
+            var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
+
+            convertedResponse.Residents.Count.Should().Be(1);
+            convertedResponse.Residents.Should().ContainEquivalentOf(matchingResidentOne);
         }
     }
 }

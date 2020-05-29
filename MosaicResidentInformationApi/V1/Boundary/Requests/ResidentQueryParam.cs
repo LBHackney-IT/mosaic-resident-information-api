@@ -17,7 +17,19 @@ namespace MosaicResidentInformationApi.V1.Boundary.Requests
         /// Databind to last_name
         [FromQuery(Name = "last_name")]
         public string LastName { get; set; }
+
+        /// <example>
+        /// 1 Montage street
+        /// </example>
+        /// Databind to address
+        [FromQuery(Name = "address")]
         public string Address { get; set; }
-        public string PostCode { get; set; }
+
+        /// <example>
+        /// E8 1DY
+        /// </example>
+        /// Databind to post_code
+        [FromQuery(Name = "postcode")]
+        public string Postcode { get; set; }
     }
 }

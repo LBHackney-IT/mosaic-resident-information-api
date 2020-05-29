@@ -38,13 +38,14 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
             };
 
             _mockMosaicGateway.Setup(x =>
-                    x.GetAllResidents("ciasom", "tessellate", "E8 1DY", null))
+                    x.GetAllResidents("ciasom", "tessellate", "E8 1DY", "1 Montage street"))
                 .Returns(stubbedResidents.ToList());
             var rqp = new ResidentQueryParam
             {
                 FirstName = "ciasom",
                 LastName = "tessellate",
-                PostCode = "E8 1DY"
+                Postcode = "E8 1DY",
+                Address = "1 Montage street"
             };
 
             var response = _classUnderTest.Execute(rqp);

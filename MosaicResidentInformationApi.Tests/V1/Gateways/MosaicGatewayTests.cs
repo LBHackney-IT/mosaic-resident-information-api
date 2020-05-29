@@ -347,7 +347,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.SaveChanges();
 
             var listOfPersons = _classUnderTest.GetAllResidents(address: addressQuery).ToList();
-             listOfPersons.Count.Should().Be(1);
+            listOfPersons.Count.Should().Be(1);
             listOfPersons
                 .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
                 .AddressList
