@@ -17,6 +17,7 @@ namespace MosaicResidentInformationApi.Tests
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
         private IDbContextTransaction _transaction;
+        private DbContextOptionsBuilder _builder;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -27,10 +28,8 @@ namespace MosaicResidentInformationApi.Tests
             npgsqlCommand.CommandText = "SET deadlock_timeout TO 30";
             npgsqlCommand.ExecuteNonQuery();
 
-            var builder = new DbContextOptionsBuilder();
-            builder.UseNpgsql(_connection);
-            MosaicContext = new MosaicContext(builder.Options);
-            MosaicContext.Database.EnsureCreated();
+            _builder = new DbContextOptionsBuilder();
+            _builder.UseNpgsql(_connection);
         }
 
         [SetUp]
@@ -38,7 +37,8 @@ namespace MosaicResidentInformationApi.Tests
         {
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
-
+            MosaicContext = new MosaicContext(_builder.Options);
+            MosaicContext.Database.EnsureCreated();
             _transaction = MosaicContext.Database.BeginTransaction();
         }
 

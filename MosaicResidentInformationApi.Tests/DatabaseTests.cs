@@ -1,5 +1,3 @@
-using System;
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MosaicResidentInformationApi.V1.Infrastructure;
@@ -13,20 +11,20 @@ namespace MosaicResidentInformationApi.Tests
     {
         protected MosaicContext MosaicContext;
         private IDbContextTransaction _transaction;
+        private DbContextOptionsBuilder _builder;
 
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
         {
-            var builder = new DbContextOptionsBuilder();
-            builder.UseNpgsql(ConnectionString.TestDatabase());
-
-            MosaicContext = new MosaicContext(builder.Options);
-            MosaicContext.Database.EnsureCreated();
+            _builder = new DbContextOptionsBuilder();
+            _builder.UseNpgsql(ConnectionString.TestDatabase());
         }
 
         [SetUp]
         public void SetUp()
         {
+            MosaicContext = new MosaicContext(_builder.Options);
+            MosaicContext.Database.EnsureCreated();
             _transaction = MosaicContext.Database.BeginTransaction();
         }
 
