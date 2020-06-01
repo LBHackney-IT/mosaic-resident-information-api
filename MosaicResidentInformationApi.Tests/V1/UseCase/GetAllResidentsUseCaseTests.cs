@@ -32,13 +32,9 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
         public void ReturnsResidentInformationList()
         {
             var stubbedResidents = _fixture.CreateMany<ResidentInformation>();
-            var expectedResponse = new ResidentInformationList()
-            {
-                Residents = stubbedResidents.ToResponse()
-            };
 
             _mockMosaicGateway.Setup(x =>
-                    x.GetAllResidents(3, 2, "ciasom", "tessellate", "E8 1DY", "1 Montage street"))
+                    x.GetAllResidents(3, 15, "ciasom", "tessellate", "E8 1DY", "1 Montage street"))
                 .Returns(stubbedResidents.ToList());
             var rqp = new ResidentQueryParam
             {
@@ -48,10 +44,58 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
                 Address = "1 Montage street"
             };
 
-            var response = _classUnderTest.Execute(rqp, 3, 2);
+            var response = _classUnderTest.Execute(rqp, 3, 15);
 
             response.Should().NotBeNull();
-            response.Should().BeEquivalentTo(expectedResponse);
+            response.Residents.Should().BeEquivalentTo(stubbedResidents.ToResponse());
+        }
+
+        [Test]
+        public void IfLimitLessThanTheMinimum_WillUseTheMinimumLimit()
+        {
+            _mockMosaicGateway.Setup(x => x.GetAllResidents(0, 10, null, null, null, null))
+                .Returns(new List<ResidentInformation>()).Verifiable();
+
+            _classUnderTest.Execute(new ResidentQueryParam(), 0, 4);
+
+            _mockMosaicGateway.Verify();
+        }
+
+        [Test]
+        public void IfLimitMoreThanTheMaximum_WillUseTheMaximumLimit()
+        {
+            _mockMosaicGateway.Setup(x => x.GetAllResidents(0, 100, null, null, null, null))
+                .Returns(new List<ResidentInformation>()).Verifiable();
+
+            _classUnderTest.Execute(new ResidentQueryParam(), 0, 400);
+
+            _mockMosaicGateway.Verify();
+        }
+
+        [Test]
+        public void ReturnsTheNextCursor()
+        {
+            var stubbedResidents = _fixture.CreateMany<ResidentInformation>(10);
+
+            var expectedNextCursor = stubbedResidents.Max(r => r.MosaicId);
+
+            _mockMosaicGateway.Setup(x =>
+                    x.GetAllResidents(0, 10, null, null, null, null))
+                .Returns(stubbedResidents.ToList());
+
+            _classUnderTest.Execute(new ResidentQueryParam(), 0, 10).NextCursor.Should().Be(expectedNextCursor);
+        }
+
+        [Test]
+        public void WhenAtTheEndOfTheResidentList_ReturnsTheNextCursorAsEmptyString()
+        {
+            var stubbedResidents = _fixture.CreateMany<ResidentInformation>(7);
+
+            _mockMosaicGateway.Setup(x =>
+                    x.GetAllResidents(0, 10, null, null, null, null))
+                .Returns(stubbedResidents.ToList());
+
+            _classUnderTest.Execute(new ResidentQueryParam(), 0, 10).NextCursor.Should().Be("");
         }
     }
 }
