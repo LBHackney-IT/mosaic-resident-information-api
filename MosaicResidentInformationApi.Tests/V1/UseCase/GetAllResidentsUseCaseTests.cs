@@ -38,7 +38,7 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
             };
 
             _mockMosaicGateway.Setup(x =>
-                    x.GetAllResidents("ciasom", "tessellate", "E8 1DY", "1 Montage street"))
+                    x.GetAllResidents(3, 2, "ciasom", "tessellate", "E8 1DY", "1 Montage street"))
                 .Returns(stubbedResidents.ToList());
             var rqp = new ResidentQueryParam
             {
@@ -48,7 +48,7 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
                 Address = "1 Montage street"
             };
 
-            var response = _classUnderTest.Execute(rqp);
+            var response = _classUnderTest.Execute(rqp, 3, 2);
 
             response.Should().NotBeNull();
             response.Should().BeEquivalentTo(expectedResponse);

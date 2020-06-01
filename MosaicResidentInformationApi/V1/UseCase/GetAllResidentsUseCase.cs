@@ -16,9 +16,10 @@ namespace MosaicResidentInformationApi.V1.UseCase
             _mosaicGateway = mosaicGateway;
         }
 
-        public ResidentInformationList Execute(ResidentQueryParam rqp)
+        public ResidentInformationList Execute(ResidentQueryParam rqp, int cursor, int limit)
         {
-            var residents = _mosaicGateway.GetAllResidents(rqp.FirstName, rqp.LastName, rqp.Postcode, rqp.Address);
+            var residents = _mosaicGateway.GetAllResidents(cursor: cursor, limit: limit, rqp.FirstName, rqp.LastName,
+                rqp.Postcode, rqp.Address);
             return new ResidentInformationList
             {
                 Residents = residents.ToResponse()

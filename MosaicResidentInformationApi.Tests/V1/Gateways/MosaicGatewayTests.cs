@@ -108,7 +108,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
         [Test]
         public void GetAllResidents_IfThereAreNoResidents_ReturnsAnEmptyList()
         {
-            _classUnderTest.GetAllResidents().Should().BeEmpty();
+            _classUnderTest.GetAllResidents(cursor: 0, limit: 20).Should().BeEmpty();
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             var databaseEntity1 = AddPersonRecordToDatabase();
             var databaseEntity2 = AddPersonRecordToDatabase();
 
-            var listOfPersons = _classUnderTest.GetAllResidents();
+            var listOfPersons = _classUnderTest.GetAllResidents(0, 20);
 
             listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
             listOfPersons.Should().ContainEquivalentOf(databaseEntity1.ToDomain());
@@ -134,7 +134,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents();
+            var listOfPersons = _classUnderTest.GetAllResidents(0, 20);
 
             listOfPersons
                 .Where(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
@@ -154,7 +154,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.TelephoneNumbers.Add(phoneNumber);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents();
+            var listOfPersons = _classUnderTest.GetAllResidents(0, 20);
 
             listOfPersons
                 .Where(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
@@ -172,7 +172,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents();
+            var listOfPersons = _classUnderTest.GetAllResidents(0, 20);
 
             listOfPersons
                 .Where(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
@@ -188,7 +188,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             var databaseEntity1 = AddPersonRecordToDatabase(firstname: "shape");
             var databaseEntity2 = AddPersonRecordToDatabase(firstname: "Ciasom");
 
-            var listOfPersons = _classUnderTest.GetAllResidents(firstname: "ciasom");
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, firstname: "ciasom");
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
             listOfPersons.Should().ContainEquivalentOf(databaseEntity2.ToDomain());
@@ -201,7 +201,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             var databaseEntity1 = AddPersonRecordToDatabase(lastname: "square");
             var databaseEntity2 = AddPersonRecordToDatabase(lastname: "Tessellate");
 
-            var listOfPersons = _classUnderTest.GetAllResidents(lastname: "tessellate");
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, lastname: "tessellate");
             listOfPersons.Count.Should().Be(2);
             listOfPersons.Should().ContainEquivalentOf(databaseEntity.ToDomain());
             listOfPersons.Should().ContainEquivalentOf(databaseEntity2.ToDomain());
@@ -216,7 +216,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(firstname: "ciasom", lastname: "Tessellate");
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, firstname: "ciasom", lastname: "Tessellate");
             listOfPersons.Count.Should().Be(1);
             listOfPersons.First().MosaicId.Should().Be(databaseEntity.Id.ToString());
         }
@@ -235,7 +235,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address1);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY");
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, postcode: "E8 1DY");
             listOfPersons.Count.Should().Be(1);
             listOfPersons
                 .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
@@ -256,7 +256,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address1);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY").ToList();
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, postcode: "E8 1DY").ToList();
             listOfPersons.Count.Should().Be(1);
             listOfPersons
                 .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
@@ -277,7 +277,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.TelephoneNumbers.Add(phoneNumber);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY").ToList();
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, postcode: "E8 1DY").ToList();
 
             var personUnderTest = listOfPersons
                 .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()));
@@ -301,7 +301,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.AddRange(new List<Address> { address, address1, address2 });
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(firstname: "ciasom", postcode: "E8 1DY").ToList();
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, firstname: "ciasom", postcode: "E8 1DY").ToList();
 
             listOfPersons.Count.Should().Be(1);
             listOfPersons.First().MosaicId.Should().Be(databaseEntity.Id.ToString());
@@ -320,7 +320,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(postcode: "E8 1DY");
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, postcode: "E8 1DY");
 
             listOfPersons.Count.Should().Be(1);
 
@@ -346,7 +346,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.Addresses.Add(address1);
             MosaicContext.SaveChanges();
 
-            var listOfPersons = _classUnderTest.GetAllResidents(address: addressQuery).ToList();
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 20, address: addressQuery).ToList();
             listOfPersons.Count.Should().Be(1);
             listOfPersons
                 .First(p => p.MosaicId.Equals(databaseEntity.Id.ToString()))
@@ -354,9 +354,68 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
                 .Should().ContainEquivalentOf(address.ToDomain());
         }
 
-        private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null)
+
+        [Test]
+        public void GetAllResidentsOnlyReturnsTheLimit_ReturnsMatchingResidenst()
         {
-            var databaseEntity = TestHelper.CreateDatabasePersonEntity(firstname, lastname);
+            var databaseEntity = AddPersonRecordToDatabase(id: 1);
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity1 = AddPersonRecordToDatabase(id: 2);
+            var address1 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity2 = AddPersonRecordToDatabase(id: 3);
+            var address2 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity3 = AddPersonRecordToDatabase(id: 4);
+            var address3 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity4 = AddPersonRecordToDatabase(id: 5);
+            var address4 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            MosaicContext.Addresses.AddRange(new List<Address> { address, address1, address2, address3, address4 });
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 0, limit: 3).ToList();
+            listOfPersons.Count.Should().Be(3);
+            listOfPersons
+                .Select(p => p.MosaicId)
+                .Should().BeEquivalentTo(new List<string> { "1", "2", "3" });
+        }
+
+
+        [Test]
+        public void GetAllResidentsOnlyReturnsTheCursorAndTheLimit_ReturnsMatchingResidenst()
+        {
+            var databaseEntity = AddPersonRecordToDatabase(id: 1);
+            var address = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity1 = AddPersonRecordToDatabase(id: 2);
+            var address1 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity2 = AddPersonRecordToDatabase(id: 3);
+            var address2 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity3 = AddPersonRecordToDatabase(id: 4);
+            var address3 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            var databaseEntity4 = AddPersonRecordToDatabase(id: 5);
+            var address4 = TestHelper.CreateDatabaseAddressForPersonId(databaseEntity.Id);
+
+            MosaicContext.Addresses.AddRange(new List<Address> { address, address1, address2, address3, address4 });
+            MosaicContext.SaveChanges();
+
+            var listOfPersons = _classUnderTest.GetAllResidents(cursor: 2, limit: 3).ToList();
+            listOfPersons.Count.Should().Be(3);
+            listOfPersons
+                .Select(p => p.MosaicId)
+                .Should().BeEquivalentTo(new List<string> { "3", "4", "5" });
+        }
+
+
+        private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null, int? id = null)
+        {
+            var databaseEntity = TestHelper.CreateDatabasePersonEntity(firstname, lastname, id);
             MosaicContext.Persons.Add(databaseEntity);
             MosaicContext.SaveChanges();
             return databaseEntity;

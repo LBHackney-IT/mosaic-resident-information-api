@@ -18,7 +18,8 @@ namespace MosaicResidentInformationApi.V1.Gateways
             _mosaicContext = mosaicContext;
         }
 
-        public List<ResidentInformation> GetAllResidents(string firstname = null, string lastname = null, string postcode = null, string address = null)
+        public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
+            string lastname = null, string postcode = null, string address = null)
         {
             var addressesFilteredByPostcode = _mosaicContext.Addresses
                 .Include(p => p.Person)
@@ -26,6 +27,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .Where(a => string.IsNullOrEmpty(postcode) || a.PostCode.ToLower().Replace(" ", "").Equals(StripString(postcode)))
                 .Where(a => string.IsNullOrEmpty(firstname) || a.Person.FirstName.ToLower().Replace(" ", "").Equals(StripString(firstname)))
                 .Where(a => string.IsNullOrEmpty(lastname) || a.Person.LastName.ToLower().Replace(" ", "").Equals(StripString(lastname)))
+                .Where(a => a.Person.Id > cursor)
                 .ToList();
 
             var peopleWithAddresses = addressesFilteredByPostcode
@@ -33,12 +35,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .ToList();
 
             var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
-                ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode)
+                ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
                 : new List<ResidentInformation>();
 
             var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
 
-            return allPeople.Select(AttachPhoneNumberToPerson).ToList();
+            return allPeople.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
         }
 
         public ResidentInformation GetEntityById(int id)
@@ -52,11 +54,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
 
             return person;
         }
-        private List<ResidentInformation> QueryPeopleWithNoAddressByName(string firstname, string lastname, List<Address> addressesFilteredByPostcode)
+        private List<ResidentInformation> QueryPeopleWithNoAddressByName(string firstname, string lastname, List<Address> addressesFilteredByPostcode, int cursor)
         {
             return _mosaicContext.Persons
                 .Where(p => string.IsNullOrEmpty(firstname) || p.FirstName.ToLower().Equals(firstname.ToLower()))
                 .Where(p => string.IsNullOrEmpty(lastname) || p.LastName.ToLower().Equals(lastname.ToLower()))
+                .Where(a => a.Id > cursor)
                 .ToList()
                 .Where(p => addressesFilteredByPostcode.All(add => add.PersonId != p.Id))
                 .Select(person =>

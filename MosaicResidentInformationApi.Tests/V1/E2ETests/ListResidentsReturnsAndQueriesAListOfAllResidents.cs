@@ -107,5 +107,30 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             convertedResponse.Residents.Count.Should().Be(1);
             convertedResponse.Residents.Should().ContainEquivalentOf(matchingResidentOne);
         }
+
+
+
+        [Test]
+        public async Task UsingQueryParametersReturnsAPaginatedResponse()
+        {
+            var matchingResidentOne = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "ER 1RR", firstname: "ciasom", lastname: "shape", id: 1);
+            var nonmatchingResidentTwo = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "ER 1RR", lastname: "shap", id: 2);
+            var matchingResident5 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "ER 1RR", id: 5);
+            var matchingResident4 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, postcode: "ER 1RR", id: 4);
+            var nonMatchingResident3 = E2ETestHelpers.AddPersonWithRelatesEntitiesToDb(MosaicContext, id: 3);
+
+            var response = Client.GetAsync("api/v1/residents?postcode=er1rr&cursor=2&limit=2");
+
+            var statusCode = response.Result.StatusCode;
+            statusCode.Should().Be(200);
+
+            var content = response.Result.Content;
+            var stringContent = await content.ReadAsStringAsync();
+            var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
+
+            convertedResponse.Residents.Count.Should().Be(2);
+            convertedResponse.Residents.Should().ContainEquivalentOf(matchingResident5);
+            convertedResponse.Residents.Should().ContainEquivalentOf(matchingResident4);
+        }
     }
 }

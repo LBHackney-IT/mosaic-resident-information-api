@@ -67,8 +67,8 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
                 LastName = "Tessellate",
             };
 
-            _mockGetAllResidentsUseCase.Setup(x => x.Execute(rqp)).Returns(residentInformationList);
-            var response = _classUnderTest.ListContacts(rqp) as OkObjectResult;
+            _mockGetAllResidentsUseCase.Setup(x => x.Execute(rqp, 3, 2)).Returns(residentInformationList);
+            var response = _classUnderTest.ListContacts(rqp, 3, 2) as OkObjectResult;
 
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
