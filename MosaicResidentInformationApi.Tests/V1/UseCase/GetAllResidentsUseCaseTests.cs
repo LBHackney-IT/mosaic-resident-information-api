@@ -1,16 +1,16 @@
 using System.Collections.Generic;
+using System.Linq;
+using AutoFixture;
 using FluentAssertions;
 using Moq;
+using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase;
-using ResidentInformationResponse = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 using NUnit.Framework;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
-using AutoFixture;
-using MosaicResidentInformationApi.V1.Factories;
-using System.Linq;
-using MosaicResidentInformationApi.V1.Boundary.Requests;
+using ResidentInformationResponse = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 
 namespace MosaicResidentInformationApi.Tests.V1.UseCase
 {

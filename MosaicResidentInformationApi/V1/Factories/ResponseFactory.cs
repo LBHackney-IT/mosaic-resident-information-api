@@ -3,10 +3,10 @@ using System.Linq;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using Address = MosaicResidentInformationApi.V1.Domain.Address;
+using AddressResponse = MosaicResidentInformationApi.V1.Boundary.Responses.Address;
 using DbAddress = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 using ResidentInformationResponse = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
-using AddressResponse = MosaicResidentInformationApi.V1.Boundary.Responses.Address;
 
 namespace MosaicResidentInformationApi.V1.Factories
 {

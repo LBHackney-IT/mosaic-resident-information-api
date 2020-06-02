@@ -1,12 +1,12 @@
+using AutoFixture;
 using FluentAssertions;
 using Moq;
 using MosaicResidentInformationApi.V1.Domain;
+using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase;
 using NUnit.Framework;
 using ResidentInformationResponse = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
-using AutoFixture;
-using MosaicResidentInformationApi.V1.Factories;
 
 namespace MosaicResidentInformationApi.Tests.V1.UseCase
 {

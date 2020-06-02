@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoFixture;
 using FluentAssertions;
 using MosaicResidentInformationApi.Tests.V1.Helper;
@@ -8,7 +9,6 @@ using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using NUnit.Framework;
-using System.Linq;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;

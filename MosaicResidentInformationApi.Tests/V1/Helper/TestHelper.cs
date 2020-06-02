@@ -1,9 +1,9 @@
+using System;
 using AutoFixture;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;
-using System;
 
 namespace MosaicResidentInformationApi.Tests.V1.Helper
 {

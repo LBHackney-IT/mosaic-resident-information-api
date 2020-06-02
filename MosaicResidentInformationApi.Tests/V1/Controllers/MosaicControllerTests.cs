@@ -1,13 +1,13 @@
+using System.Collections.Generic;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using MosaicResidentInformationApi.V1.Controllers;
-using NUnit.Framework;
-using System.Collections.Generic;
-using MosaicResidentInformationApi.V1.Boundary.Responses;
-using MosaicResidentInformationApi.V1.UseCase.Interfaces;
-using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 using MosaicResidentInformationApi.V1.Boundary.Requests;
+using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.Controllers;
+using MosaicResidentInformationApi.V1.UseCase.Interfaces;
+using NUnit.Framework;
+using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 
 namespace MosaicResidentInformationApi.Tests.V1.Controllers
 {
