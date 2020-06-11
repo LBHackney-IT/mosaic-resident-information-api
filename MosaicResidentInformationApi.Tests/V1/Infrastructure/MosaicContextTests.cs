@@ -23,6 +23,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Infrastructure
             MosaicContext.SaveChanges();
 
             var result = MosaicContext.Persons.ToList().FirstOrDefault();
+            Console.WriteLine(JsonConvert.SerializeObject(result));
 
             result.Should().BeEquivalentTo(databaseEntity);
             true.Should().BeFalse();
