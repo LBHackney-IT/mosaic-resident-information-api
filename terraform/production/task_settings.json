@@ -50,7 +50,7 @@
                 "Severity": "LOGGER_SEVERITY_DEFAULT"
             }
         ],
-        "CloudWatchLogGroup": "/aws/dms/mosaic-api/production/gateway-replication",
+        "CloudWatchLogGroup": null,
         "CloudWatchLogStream": null
     },
     "ControlTablesSettings": {
