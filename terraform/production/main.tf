@@ -17,13 +17,6 @@ locals {
    parameter_store = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter"
 }
 
-data "aws_iam_role" "ec2_container_service_role" {
-  name = "ecsServiceRole"
-}
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
-}
-
 terraform {
   backend "s3" {
     bucket  = "terraform-state-production-apis"
@@ -91,39 +84,6 @@ data "aws_ssm_parameter" "mosaic_postgres_hostname" {
 data "aws_ssm_parameter" "mosaic_db_name" {
     name = "/mosaic/live-server/db_name"
 }
-
-/* ONE OFF ACCOUNT SET UP FOR DMS REQUIRED ROLES */
-
- data "aws_iam_policy_document" "dms_assume_role" {
-   statement {
-     actions = ["sts:AssumeRole"]
-
-     principals {
-       identifiers = ["dms.amazonaws.com"]
-       type        = "Service"
-     }
-   }
- }
-
- resource "aws_iam_role" "dms-access-for-endpoint" {
-   assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-   name               = "dms-access-for-endpoint"
- }
-
- resource "aws_iam_role_policy_attachment" "dms-access-for-endpoint-AmazonDMSRedshiftS3Role" {
-   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSRedshiftS3Role"
-   role       = aws_iam_role.dms-access-for-endpoint.name
- }
- resource "aws_iam_role" "dms-vpc-role" {
-   assume_role_policy = data.aws_iam_policy_document.dms_assume_role.json
-   name               = "dms-vpc-role"
- }
- resource "aws_iam_role_policy_attachment" "dms-vpc-role-AmazonDMSVPCManagementRole" {
-   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonDMSVPCManagementRole"
-   role       = aws_iam_role.dms-vpc-role.name
- }
-
-//Currently, we don't have the mosaic LIVE information, the below will be uncommented once the info is provided
 
  module "dms_setup_production" {
    source = "github.com/LBHackney-IT/aws-dms-terraform.git//dms_full_setup"
