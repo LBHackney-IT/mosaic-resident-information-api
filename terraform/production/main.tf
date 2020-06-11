@@ -133,7 +133,7 @@ data "aws_ssm_parameter" "mosaic_db_name" {
    target_db_name = "mosaic_mirror"
    target_endpoint_identifier = "target-mosaic-endpoint"
    target_db_engine_name = "postgres"
-   target_db_port = 5002
+   target_db_port = 5000
    target_db_username = data.aws_ssm_parameter.mosaic_postgres_username.value
    target_db_password = data.aws_ssm_parameter.mosaic_postgres_db_password.value
    target_db_server = data.aws_ssm_parameter.mosaic_postgres_hostname.value
