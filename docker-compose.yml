@@ -9,7 +9,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - CONNECTION_STRING=Host=dev-database;Port=5432;Database=entitycorex;Username=postgres;Password=mypassword
+      - CONNECTION_STRING=Host=dev-database;Port=5432;Database=mosaicdb;Username=postgres;Password=mypassword
     links:
       - dev-database
   dev-database:
@@ -29,7 +29,7 @@ services:
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=mypassword
-      - DB_DATABASE=mosaic-test
+      - DB_DATABASE=mosaicdb
     links:
       - test-database
   test-database:
