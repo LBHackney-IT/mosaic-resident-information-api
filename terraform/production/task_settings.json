@@ -27,7 +27,7 @@
         "CommitRate": 10000
     },
     "Logging": {
-        "EnableLogging": false,
+        "EnableLogging": true,
         "LogComponents": [
             {
                 "Id": "SOURCE_UNLOAD",
@@ -50,7 +50,7 @@
                 "Severity": "LOGGER_SEVERITY_DEFAULT"
             }
         ],
-        "CloudWatchLogGroup": null,
+        "CloudWatchLogGroup": "/aws/dms/mosaic-api/production/gateway-replication",
         "CloudWatchLogStream": null
     },
     "ControlTablesSettings": {
