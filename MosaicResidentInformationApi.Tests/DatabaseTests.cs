@@ -9,9 +9,11 @@ namespace MosaicResidentInformationApi.Tests
     [TestFixture]
     public class DatabaseTests
     {
-        protected MosaicContext MosaicContext;
+        private MosaicContext _context;
         private IDbContextTransaction _transaction;
         private DbContextOptionsBuilder _builder;
+
+        protected MosaicContext MosaicContext => _context;
 
         [OneTimeSetUp]
         public void RunBeforeAnyTests()
@@ -23,8 +25,8 @@ namespace MosaicResidentInformationApi.Tests
         [SetUp]
         public void SetUp()
         {
-            MosaicContext = new MosaicContext(_builder.Options);
-            MosaicContext.Database.EnsureCreated();
+            _context = new MosaicContext(_builder.Options);
+            _context.Database.EnsureCreated();
             _transaction = MosaicContext.Database.BeginTransaction();
         }
 

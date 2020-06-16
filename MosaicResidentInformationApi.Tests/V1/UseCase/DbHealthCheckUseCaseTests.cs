@@ -1,5 +1,6 @@
 using System.Threading;
 using Bogus;
+using FluentAssertions;
 using Microsoft.Extensions.HealthChecks;
 using Moq;
 using MosaicResidentInformationApi.V1.UseCase;
@@ -39,9 +40,9 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
         {
             var response = _classUnderTest.Execute();
 
-            Assert.NotNull(response);
-            Assert.True(response.Success);
-            Assert.AreEqual(response.Message, "test: " + _description);
+            response.Should().NotBeNull();
+            response.Success.Should().BeTrue();
+            response.Message.Should().Be("test: " + _description);
         }
     }
 }

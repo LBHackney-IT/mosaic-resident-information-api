@@ -9,15 +9,18 @@ namespace MosaicResidentInformationApi.Tests
 {
     [NonParallelizable]
     [TestFixture]
-    public class E2ETests<TStartup> where TStartup : class
+    public class EndToEndTests<TStartup> where TStartup : class
     {
-        protected HttpClient Client;
-        protected MosaicContext MosaicContext;
+        private HttpClient _client;
+        private MosaicContext _mosaicContext;
 
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
         private IDbContextTransaction _transaction;
         private DbContextOptionsBuilder _builder;
+
+        protected HttpClient Client => _client;
+        protected MosaicContext MosaicContext => _mosaicContext;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -36,16 +39,16 @@ namespace MosaicResidentInformationApi.Tests
         public void BaseSetup()
         {
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
-            Client = _factory.CreateClient();
-            MosaicContext = new MosaicContext(_builder.Options);
-            MosaicContext.Database.EnsureCreated();
+            _client = _factory.CreateClient();
+            _mosaicContext = new MosaicContext(_builder.Options);
+            _mosaicContext.Database.EnsureCreated();
             _transaction = MosaicContext.Database.BeginTransaction();
         }
 
         [TearDown]
         public void BaseTearDown()
         {
-            Client.Dispose();
+            _client.Dispose();
             _factory.Dispose();
             _transaction.Rollback();
             _transaction.Dispose();

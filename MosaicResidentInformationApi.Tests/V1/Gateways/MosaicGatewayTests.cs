@@ -19,7 +19,6 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
     [TestFixture]
     public class MosaicGatewayTests : DatabaseTests
     {
-        private readonly Fixture _faker = new Fixture();
         private MosaicGateway _classUnderTest;
 
         [SetUp]

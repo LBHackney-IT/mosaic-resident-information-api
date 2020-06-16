@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -9,7 +10,7 @@ using NUnit.Framework;
 namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 {
     [TestFixture]
-    public class ListResidentsReturnsAndQueriesAListOfAllResidents : E2ETests<Startup>
+    public class ListResidentsReturnsAndQueriesAListOfAllResidents : EndToEndTests<Startup>
     {
         private IFixture _fixture;
 
@@ -26,13 +27,14 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var expectedResidentResponseTwo = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext);
             var expectedResidentResponseThree = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext);
 
-            var response = Client.GetAsync("api/v1/residents");
+            var uri = new Uri("api/v1/residents", UriKind.Relative);
+            var response = Client.GetAsync(uri);
 
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
             var content = response.Result.Content;
-            var stringContent = await content.ReadAsStringAsync();
+            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
 
             convertedResponse.Residents.Should().ContainEquivalentOf(expectedResidentResponseOne);
@@ -48,13 +50,14 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var expectedResidentResponseTwo = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext, firstname: "ciasom", lastname: "shape");
             var expectedResidentResponseThree = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext);
 
-            var response = Client.GetAsync("api/v1/residents?first_name=ciasom&last_name=tessellate");
+            var uri = new Uri("api/v1/residents?first_name=ciasom&last_name=tessellate", UriKind.Relative);
+            var response = Client.GetAsync(uri);
 
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
             var content = response.Result.Content;
-            var stringContent = await content.ReadAsStringAsync();
+            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
 
             convertedResponse.Residents.Count.Should().Be(1);
@@ -70,13 +73,14 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var nonMatchingResident2 = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext, addressLines: "1 Seasame street, Hackney, LDN");
             var nonMatchingResident3 = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext);
 
-            var response = Client.GetAsync("api/v1/residents?postcode=er1rr&address=1 Seasame street");
+            var uri = new Uri("api/v1/residents?postcode=er1rr&address=1 Seasame street", UriKind.Relative);
+            var response = Client.GetAsync(uri);
 
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
             var content = response.Result.Content;
-            var stringContent = await content.ReadAsStringAsync();
+            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
             var r = convertedResponse.Residents.ToList();
 
@@ -95,13 +99,14 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var nonMatchingResident2 = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext, addressLines: "1 Seasame street, Hackney, LDN");
             var nonMatchingResident3 = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext);
 
-            var response = Client.GetAsync("api/v1/residents?postcode=er1rr&address=1 Seasame street&first_name=ciasom&last_name=shape");
+            var uri = new Uri("api/v1/residents?postcode=er1rr&address=1 Seasame street&first_name=ciasom&last_name=shape", UriKind.Relative);
+            var response = Client.GetAsync(uri);
 
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
             var content = response.Result.Content;
-            var stringContent = await content.ReadAsStringAsync();
+            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
 
             convertedResponse.Residents.Count.Should().Be(1);
@@ -119,13 +124,14 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var matchingResident4 = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext, postcode: "ER 1RR", id: 4);
             var nonMatchingResident3 = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext, id: 3);
 
-            var response = Client.GetAsync("api/v1/residents?postcode=er1rr&cursor=2&limit=2");
+            var uri = new Uri("api/v1/residents?postcode=er1rr&cursor=2&limit=2", UriKind.Relative);
+            var response = Client.GetAsync(uri);
 
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
             var content = response.Result.Content;
-            var stringContent = await content.ReadAsStringAsync();
+            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformationList>(stringContent);
 
             convertedResponse.Residents.Count.Should().Be(2);

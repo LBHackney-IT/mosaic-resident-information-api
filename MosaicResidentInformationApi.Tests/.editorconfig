@@ -1,0 +1,4 @@
+
+[*.cs]
+# Allow underscores in test names
+dotnet_diagnostic.CA1707.severity = none

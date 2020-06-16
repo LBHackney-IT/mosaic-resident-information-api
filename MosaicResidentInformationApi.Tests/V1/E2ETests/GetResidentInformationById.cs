@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
@@ -8,7 +9,7 @@ using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.R
 namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 {
     [TestFixture]
-    public class GetResidentInformationById : E2ETests<Startup>
+    public class GetResidentInformationById : EndToEndTests<Startup>
     {
         private IFixture _fixture;
 
@@ -24,12 +25,13 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
             var personId = _fixture.Create<int>();
             var expectedResponse = E2ETestHelpers.AddPersonWithRelatedEntitiesToDb(MosaicContext, personId);
 
-            var response = Client.GetAsync($"api/v1/residents/{personId}");
+            var uri = new Uri($"api/v1/residents/{personId}", UriKind.Relative);
+            var response = Client.GetAsync(uri);
             var statusCode = response.Result.StatusCode;
             statusCode.Should().Be(200);
 
             var content = response.Result.Content;
-            var stringContent = await content.ReadAsStringAsync();
+            var stringContent = await content.ReadAsStringAsync().ConfigureAwait(true);
             var convertedResponse = JsonConvert.DeserializeObject<ResidentInformation>(stringContent);
 
             convertedResponse.Should().BeEquivalentTo(expectedResponse);
