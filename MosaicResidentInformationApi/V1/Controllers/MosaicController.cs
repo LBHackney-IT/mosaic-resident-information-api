@@ -5,6 +5,7 @@ using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
+using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
 
 namespace MosaicResidentInformationApi.V1.Controllers
 {
@@ -46,12 +47,19 @@ namespace MosaicResidentInformationApi.V1.Controllers
         /// </summary>
         /// <response code="200">Success. Returns resident related to the specified ID</response>
         /// <response code="404">No resident found for the specified ID</response>
+        [ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("{mosaicId}")]
         public IActionResult ViewRecord(int mosaicId)
         {
-
-            return Ok(_getEntityByIdUseCase.Execute(mosaicId));
+            try
+            {
+                return Ok(_getEntityByIdUseCase.Execute(mosaicId));
+            }
+            catch (ResidentNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
     }

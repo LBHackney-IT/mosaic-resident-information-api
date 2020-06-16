@@ -36,5 +36,14 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 
             convertedResponse.Should().BeEquivalentTo(expectedResponse);
         }
+
+        [Test]
+        public void GetResidentByIdReturns404IfNotFound()
+        {
+            var uri = new Uri($"api/v1/residents/132", UriKind.Relative);
+            var response = Client.GetAsync(uri);
+            var statusCode = response.Result.StatusCode;
+            statusCode.Should().Be(404);
+        }
     }
 }

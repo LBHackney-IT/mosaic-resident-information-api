@@ -1,3 +1,4 @@
+using System;
 using AutoFixture;
 using FluentAssertions;
 using Moq;
@@ -15,7 +16,7 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
     {
         private Mock<IMosaicGateway> _mockMosaicGateway;
         private GetEntityByIdUseCase _classUnderTest;
-        private Fixture _fixture = new Fixture();
+        private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -26,7 +27,7 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
         }
 
         [Test]
-        public void ReturnsResidentInformationList()
+        public void ReturnsResidentInformation()
         {
             var stubbedResidentInfo = _fixture.Create<ResidentInformation>();
 
@@ -39,6 +40,17 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
 
             response.Should().NotBeNull();
             response.Should().BeEquivalentTo(expectedResponse);
+        }
+
+        [Test]
+        public void IfGatewayReturnsNullThrowNotFoundError()
+        {
+            ResidentInformation nullResult = null;
+            _mockMosaicGateway.Setup(x => x.GetEntityById(It.IsAny<int>()))
+                .Returns(nullResult);
+            Func<ResidentInformationResponse> testDelegate = () => _classUnderTest.Execute(1);
+
+            testDelegate.Should().Throw<ResidentNotFoundException>();
         }
     }
 }

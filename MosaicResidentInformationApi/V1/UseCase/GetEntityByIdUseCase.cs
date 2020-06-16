@@ -1,3 +1,4 @@
+using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
@@ -16,6 +17,8 @@ namespace MosaicResidentInformationApi.V1.UseCase
         public ResidentInformationResponse Execute(int id)
         {
             var residentInfo = _mosaicGateway.GetEntityById(id);
+            if (residentInfo == null) throw new ResidentNotFoundException();
+
             return residentInfo.ToResponse();
         }
     }
