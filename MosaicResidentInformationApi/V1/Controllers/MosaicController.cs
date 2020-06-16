@@ -26,6 +26,7 @@ namespace MosaicResidentInformationApi.V1.Controllers
         /// Returns list of contacts who share the query search parameter
         /// </summary>
         /// <response code="200">Success. Returns a list of matching residents information</response>
+        /// <response code="400">Invalid Query Parameter.</response>
         [ProducesResponseType(typeof(ResidentInformationList), StatusCodes.Status200OK)]
         [HttpGet]
         public IActionResult ListContacts([FromQuery] ResidentQueryParam rqp, int? cursor = 0, int? limit = 20)
@@ -40,6 +41,11 @@ namespace MosaicResidentInformationApi.V1.Controllers
             }
         }
 
+        /// /// <summary>
+        /// Find a resident by Mosaic ID
+        /// </summary>
+        /// <response code="200">Success. Returns resident related to the specified ID</response>
+        /// <response code="404">No resident found for the specified ID</response>
         [HttpGet]
         [Route("{mosaicId}")]
         public IActionResult ViewRecord(int mosaicId)
