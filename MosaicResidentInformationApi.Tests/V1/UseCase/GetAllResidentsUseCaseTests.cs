@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
@@ -5,6 +6,7 @@ using FluentAssertions;
 using Moq;
 using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
+using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase;
@@ -20,12 +22,14 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
         private Mock<IMosaicGateway> _mockMosaicGateway;
         private GetAllResidentsUseCase _classUnderTest;
         private Fixture _fixture = new Fixture();
+        private Mock<IValidatePostcode> _mockPostcodeValidator;
 
         [SetUp]
         public void SetUp()
         {
             _mockMosaicGateway = new Mock<IMosaicGateway>();
-            _classUnderTest = new GetAllResidentsUseCase(_mockMosaicGateway.Object);
+            _mockPostcodeValidator = new Mock<IValidatePostcode>();
+            _classUnderTest = new GetAllResidentsUseCase(_mockMosaicGateway.Object, _mockPostcodeValidator.Object);
         }
 
         [Test]
@@ -43,11 +47,26 @@ namespace MosaicResidentInformationApi.Tests.V1.UseCase
                 Postcode = "E8 1DY",
                 Address = "1 Montage street"
             };
+            _mockPostcodeValidator.Setup(x => x.Execute(rqp.Postcode)).Returns(true);
 
             var response = _classUnderTest.Execute(rqp, 3, 15);
 
             response.Should().NotBeNull();
             response.Residents.Should().BeEquivalentTo(stubbedResidents.ToResponse());
+        }
+
+        [Test]
+        public void IfPostcodeInvalid_ReturnsAnError()
+        {
+            var rqp = new ResidentQueryParam
+            {
+                Postcode = "E8881DY",
+            };
+            _mockPostcodeValidator.Setup(x => x.Execute(rqp.Postcode)).Returns(false);
+
+            Func<ResidentInformationList> testDelegate = () => _classUnderTest.Execute(rqp, 3, 15);
+            testDelegate.Should().Throw<InvalidQueryParameterException>()
+                .WithMessage("The Postcode given does not have a valid format");
         }
 
         [Test]
