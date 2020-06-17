@@ -68,6 +68,9 @@ module "postgres_db_production" {
 }
 
 /*    DMS SET UP    */
+data "aws_ssm_parameter" "mosaic_postgres_hostname" {
+    name = "/mosaic-api/production/postgres-hostname"
+}
 
 data "aws_ssm_parameter" "mosaic_username" {
    name = "/mosaic/live-server/username"
@@ -78,11 +81,22 @@ data "aws_ssm_parameter" "mosaic_password" {
 data "aws_ssm_parameter" "mosaic_hostname" {
    name = "/mosaic/live-server/hostname"
 }
-data "aws_ssm_parameter" "mosaic_postgres_hostname" {
-   name = "/mosaic-api/production/postgres-hostname"
-}
 data "aws_ssm_parameter" "mosaic_db_name" {
     name = "/mosaic/live-server/db_name"
+}
+
+//Temporarily using the reporting server
+data "aws_ssm_parameter" "mosaic_username_reporting" {
+    name = "/mosaic/reporting-server/username"
+}
+data "aws_ssm_parameter" "mosaic_password_reporting" {
+    name = "/mosaic/reporting-server/password"
+}
+data "aws_ssm_parameter" "mosaic_hostname_reporting" {
+    name = "/mosaic/reporting-server/hostname"
+}
+data "aws_ssm_parameter" "mosaic_db_name_reporting" {
+    name = "/mosaic/reporting-server/db_name"
 }
 
  module "dms_setup_production" {
@@ -103,9 +117,9 @@ data "aws_ssm_parameter" "mosaic_db_name" {
    source_endpoint_identifier = "source-mosaic-endpoint"
    source_db_engine_name = "sqlserver"
    source_db_port = 1433
-   source_db_username = data.aws_ssm_parameter.mosaic_username.value
-   source_db_password = data.aws_ssm_parameter.mosaic_password.value
-   source_db_server = data.aws_ssm_parameter.mosaic_hostname.value
+   source_db_username = data.aws_ssm_parameter.mosaic_username_reporting.value
+   source_db_password = data.aws_ssm_parameter.mosaic_password_reporting.value
+   source_db_server = data.aws_ssm_parameter.mosaic_hostname_reporting.value
    source_endpoint_ssl_mode = "none"
    //replication instance set up -> IF SOURCE IS 'dms_full_setup'
    allocated_storage = 20 //in GB
