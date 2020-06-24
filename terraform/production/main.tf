@@ -113,7 +113,7 @@ data "aws_ssm_parameter" "mosaic_db_name_reporting" {
    target_db_server = data.aws_ssm_parameter.mosaic_postgres_hostname.value
    target_endpoint_ssl_mode = "none"
    //source db for dms endpoint
-   source_db_name = data.aws_ssm_parameter.mosaic_db_name.value
+   source_db_name = data.aws_ssm_parameter.mosaic_db_name_reporting.value
    source_endpoint_identifier = "source-mosaic-endpoint"
    source_db_engine_name = "sqlserver"
    source_db_port = 1433
@@ -129,7 +129,7 @@ data "aws_ssm_parameter" "mosaic_db_name_reporting" {
    vpc_name = "vpc-production-apis"
    dms_instance_publicly_accessible = false
    //dms task set up
-   migration_type = "full-load"
+   migration_type = "full-load" // When using the live server will need to be switched back to full-load-and-cdc
    replication_task_indentifier = "mosaic-api-dms-task"
    task_settings = file("${path.module}/task_settings.json")
    task_table_mappings = file("${path.module}/selection_rules.json")
