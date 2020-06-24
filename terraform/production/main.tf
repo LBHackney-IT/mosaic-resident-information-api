@@ -129,7 +129,7 @@ data "aws_ssm_parameter" "mosaic_db_name_reporting" {
    vpc_name = "vpc-production-apis"
    dms_instance_publicly_accessible = false
    //dms task set up
-   migration_type = "full-load-and-cdc"
+   migration_type = "full-load"
    replication_task_indentifier = "mosaic-api-dms-task"
    task_settings = file("${path.module}/task_settings.json")
    task_table_mappings = file("${path.module}/selection_rules.json")
