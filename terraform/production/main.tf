@@ -58,13 +58,29 @@ module "postgres_db_production" {
   db_engine_version = "11.1" //DMS does not work well with v12
   db_instance_class = "db.t2.micro"
   db_allocated_storage = 20
-  maintenance_window ="sun:10:00-sun:10:30"
+  maintenance_window = "sun:10:00-sun:10:30"
   db_username = data.aws_ssm_parameter.mosaic_postgres_username.value
   db_password = data.aws_ssm_parameter.mosaic_postgres_db_password.value
   storage_encrypted = false
   multi_az = true //only true if production deployment
   publicly_accessible = false
   project_name = "platform apis"
+}
+
+/* EC2  INSTANCE SETUP */
+data "aws_ssm_parameter" "session_manager_public_key" {
+  name = "/production/session_manager_public_key"
+}
+
+module "session_manager_ec2_instance_production" {
+  source = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/session_manager_ec2"
+  vpc_id = data.aws_vpc.production_vpc.id
+  db_name = "mosaic_mirror"
+  db_port = 5000
+  environment_name = "production"
+  subnet_id = data.aws_subnet_ids.production.ids[0]
+  iam_role = "rds-read-only-role"
+  public_key = data.aws_ssm_parameter.session_manager_public_key
 }
 
 /*    DMS SET UP    */

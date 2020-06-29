@@ -67,13 +67,29 @@ module "postgres_db_staging" {
   db_engine_version = "11.1" //DMS does not work well with v12
   db_instance_class = "db.t2.micro"
   db_allocated_storage = 20
-  maintenance_window ="sun:10:00-sun:10:30"
+  maintenance_window = "sun:10:00-sun:10:30"
   db_username = data.aws_ssm_parameter.mosaic_postgres_username.value
   db_password = data.aws_ssm_parameter.mosaic_postgres_db_password.value
   storage_encrypted = false
   multi_az = false //only true if production deployment
   publicly_accessible = false
   project_name = "platform apis"
+}
+
+/* EC2  INSTANCE SETUP */
+data "aws_ssm_parameter" "session_manager_public_key" {
+  name = "/staging/session_manager_public_key"
+}
+
+module "session_manager_ec2_instance_staging" {
+  source = "github.com/LBHackney-IT/aws-hackney-common-terraform.git//modules/session_manager_ec2"
+  vpc_id = data.aws_vpc.staging_vpc.id
+  db_name = "mosaic_mirror"
+  db_port = 5002
+  environment_name = "staging"
+  subnet_id = data.aws_subnet_ids.staging.ids[0]
+  public_key = data.aws_ssm_parameter.session_manager_public_key
+  iam_role = "rds-read-only-role"
 }
 
 /*    DMS SET UP    */
