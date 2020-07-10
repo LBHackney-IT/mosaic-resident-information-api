@@ -15,12 +15,14 @@ namespace MosaicResidentInformationApi.V1.Gateways
 
         public MosaicGateway(MosaicContext mosaicContext)
         {
+            Console.WriteLine("In gateway constructor");
             _mosaicContext = mosaicContext;
         }
 
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
             string lastname = null, string postcode = null, string address = null)
         {
+            Console.WriteLine("In gateway method, about to make the query");
             var addressesFilteredByPostcode = _mosaicContext.Addresses
                 .Include(p => p.Person)
                 .Where(a => string.IsNullOrEmpty(address) || a.AddressLines.ToLower().Replace(" ", "").Contains(StripString(address)))
