@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MosaicResidentInformationApi.V1.Infrastructure
 {
-    [Table("dm_persons")]
+    [Table("dm_persons", Schema = "dbo")]
     public class Person
     {
         [Column("person_id")]

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MosaicResidentInformationApi.V1.Infrastructure
 {
-    [Table("dm_telephone_numbers")]
+    [Table("dm_telephone_numbers", Schema = "dbo")]
     public class TelephoneNumber
     {
         [Column("telephone_number_id")]
