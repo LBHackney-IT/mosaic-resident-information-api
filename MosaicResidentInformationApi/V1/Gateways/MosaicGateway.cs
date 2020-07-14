@@ -23,12 +23,17 @@ namespace MosaicResidentInformationApi.V1.Gateways
             string lastname = null, string postcode = null, string address = null)
         {
             Console.WriteLine("In gateway method, about to make the query");
+            var firstNameSearchPattern = GetSearchPattern(firstname);
+            var lastNameSearchPattern = GetSearchPattern(lastname);
+            var addressSearchPattern = GetSearchPattern(address);
+            var postcodeSearchPattern = GetSearchPattern(postcode);
+
             var addressesFilteredByPostcode = _mosaicContext.Addresses
-                .Include(p => p.Person)
-                .Where(a => string.IsNullOrEmpty(address) || a.AddressLines.ToLower().Replace(" ", "").Contains(StripString(address)))
-                .Where(a => string.IsNullOrEmpty(postcode) || a.PostCode.ToLower().Replace(" ", "").Equals(StripString(postcode)))
-                .Where(a => string.IsNullOrEmpty(firstname) || a.Person.FirstName.ToLower().Replace(" ", "").Contains(StripString(firstname)))
-                .Where(a => string.IsNullOrEmpty(lastname) || a.Person.LastName.ToLower().Replace(" ", "").Contains(StripString(lastname)))
+                .Include(a => a.Person)
+                .Where(a => string.IsNullOrEmpty(address) || EF.Functions.ILike(a.AddressLines.Replace(" ", ""), addressSearchPattern))
+                .Where(a => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(a.PostCode.Replace(" ", ""), postcodeSearchPattern))
+                .Where(a => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(a.Person.FirstName, firstNameSearchPattern))
+                .Where(a => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(a.Person.LastName, lastNameSearchPattern))
                 .Where(a => a.Person.Id > cursor)
                 .ToList();
 
@@ -58,10 +63,13 @@ namespace MosaicResidentInformationApi.V1.Gateways
         }
         private List<ResidentInformation> QueryPeopleWithNoAddressByName(string firstname, string lastname, List<Address> addressesFilteredByPostcode, int cursor)
         {
+            var firstNameSearchPattern = GetSearchPattern(firstname);
+            var lastNameSearchPattern = GetSearchPattern(lastname);
+
             return _mosaicContext.Persons
-                .Where(p => string.IsNullOrEmpty(firstname) || p.FirstName.ToLower().Contains(firstname.ToLower()))
-                .Where(p => string.IsNullOrEmpty(lastname) || p.LastName.ToLower().Contains(lastname.ToLower()))
-                .Where(a => a.Id > cursor)
+                .Where(p => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(p.FirstName, firstNameSearchPattern))
+                .Where(p => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(p.LastName, lastNameSearchPattern))
+                .Where(p => p.Id > cursor)
                 .ToList()
                 .Where(p => addressesFilteredByPostcode.All(add => add.PersonId != p.Id))
                 .Select(person =>
@@ -104,9 +112,9 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return addressesForPerson.OrderByDescending(a => a.EndDate).First().Uprn.ToString();
         }
 
-        private static string StripString(string str)
+        private static string GetSearchPattern(string str)
         {
-            return str?.ToLower().Replace(" ", "");
+            return $"%{str?.Replace(" ", "")}%";
         }
     }
 }
