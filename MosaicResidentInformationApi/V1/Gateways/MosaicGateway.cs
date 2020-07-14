@@ -50,7 +50,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return allPeople.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
         }
 
-        public ResidentInformation GetEntityById(int id)
+        public ResidentInformation GetEntityById(long id)
         {
             var databaseRecord = _mosaicContext.Persons.Find(id);
             if (databaseRecord == null) return null;

@@ -10,7 +10,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
         [Column("person_id")]
         [MaxLength(16)]
         [Key]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("full_name")]
         [MaxLength(62)]
@@ -30,7 +30,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
 
         [Column("nhs_id")]
         [MaxLength(10)]
-        public int NhsNumber { get; set; }
+        public long NhsNumber { get; set; }
 
         [Column("date_of_birth")]
         public DateTime DateOfBirth { get; set; }

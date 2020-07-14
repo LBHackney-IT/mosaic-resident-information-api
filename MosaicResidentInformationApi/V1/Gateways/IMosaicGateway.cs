@@ -7,6 +7,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
     {
         List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null, string lastname = null,
             string postcode = null, string address = null);
-        ResidentInformation GetEntityById(int id);
+        ResidentInformation GetEntityById(long id);
     }
 }

@@ -8,7 +8,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
     {
         [Column("telephone_number_id")]
         [MaxLength(9)]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("telephone_number")]
         [MaxLength(32)]
@@ -25,7 +25,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
 
         [Column("person_id")]
         [MaxLength(16)]
-        public int PersonId { get; set; }
+        public long PersonId { get; set; }
 
     }
 }
