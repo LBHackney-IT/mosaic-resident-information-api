@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.Infrastructure;
@@ -118,7 +119,7 @@ namespace MosaicResidentInformationApi
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
             Console.WriteLine(connectionString);
 
-            services.AddDbContext<MosaicContext>(options => options.UseNpgsql(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+            services.AddDbContext<MosaicContext>(options => options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddDebug())).UseNpgsql(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
             Console.WriteLine("Connected ?");
         }
 
