@@ -12,9 +12,20 @@
             "filters": []
         },
         {
+          "rule-type": "transformation",
+          "rule-id": "2",
+          "rule-name": "2",
+          "rule-action": "convert-lowercase",
+          "rule-target": "table",
+          "object-locator": {
+            "schema-name": "%",
+            "table-name": "DM_PERSONS"
+          }
+        },
+        {
             "rule-type": "selection",
-            "rule-id": "2",
-            "rule-name": "2",
+            "rule-id": "3",
+            "rule-name": "3",
             "object-locator": {
                 "schema-name": "%",
                 "table-name": "DM_ADDRESSES"
@@ -23,15 +34,49 @@
             "filters": []
         },
         {
+          "rule-type": "transformation",
+          "rule-id": "4",
+          "rule-name": "4",
+          "rule-action": "convert-lowercase",
+          "rule-target": "table",
+          "object-locator": {
+            "schema-name": "%",
+            "table-name": "DM_ADDRESSES"
+          }
+        },
+        {
             "rule-type": "selection",
-            "rule-id": "3",
-            "rule-name": "3",
+            "rule-id": "5",
+            "rule-name": "5",
             "object-locator": {
                 "schema-name": "%",
                 "table-name": "DM_TELEPHONE_NUMBERS"
             },
             "rule-action": "include",
             "filters": []
+        },
+        {
+          "rule-type": "transformation",
+          "rule-id": "6",
+          "rule-name": "6",
+          "rule-action": "convert-lowercase",
+          "rule-target": "table",
+          "object-locator": {
+            "schema-name": "%",
+            "table-name": "DM_TELEPHONE_NUMBERS"
+          }
+        },
+        {
+          "rule-type": "transformation",
+          "rule-id": "7",
+          "rule-name": "7",
+          "rule-action": "convert-lowercase",
+          "rule-target": "column",
+          "object-locator": {
+            "schema-name": "%",
+            "table-name": "%",
+            "column-name": "%"
+          }
         }
     ]
 }
