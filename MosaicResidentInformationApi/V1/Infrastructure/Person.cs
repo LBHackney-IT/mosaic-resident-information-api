@@ -30,10 +30,10 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
 
         [Column("nhs_id")]
         [MaxLength(10)]
-        public long NhsNumber { get; set; }
+        public long? NhsNumber { get; set; }
 
         [Column("date_of_birth")]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Column("gender")]
         [MaxLength(1)]

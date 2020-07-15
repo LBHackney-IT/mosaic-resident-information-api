@@ -33,7 +33,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
                 FirstName = personRecord.FirstName,
                 LastName = personRecord.LastName,
                 NhsNumber = personRecord.NhsNumber.ToString(),
-                DateOfBirth = personRecord.DateOfBirth.ToString("O"),
+                DateOfBirth = personRecord.DateOfBirth?.ToString("O"),
             });
         }
 

@@ -43,8 +43,8 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
 
             response.FirstName.Should().Be(databaseEntity.FirstName);
             response.LastName.Should().Be(databaseEntity.LastName);
-            response.NhsNumber.Should().Be(databaseEntity.NhsNumber.ToString());
-            response.DateOfBirth.Should().Be(databaseEntity.DateOfBirth.ToString("O"));
+            response.NhsNumber.Should().Be(databaseEntity.NhsNumber?.ToString());
+            response.DateOfBirth.Should().Be(databaseEntity.DateOfBirth?.ToString("O"));
             response.Should().NotBe(null);
         }
 

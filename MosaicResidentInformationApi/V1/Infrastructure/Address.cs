@@ -21,7 +21,7 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
 
         [Column("person_id")]
         [MaxLength(16)]
-        public long PersonId { get; set; }
+        public long? PersonId { get; set; }
 
         // If this is populated it means the address is historical
         [Column("end_date")]
@@ -37,6 +37,6 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
 
         [Column("unique_id")]
         [MaxLength(15)]
-        public long Uprn { get; set; }
+        public long? Uprn { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
                 .Without(p => p.Id)
                 .Create();
             fp.DateOfBirth = new DateTime
-                (fp.DateOfBirth.Year, fp.DateOfBirth.Month, fp.DateOfBirth.Day);
+                (fp.DateOfBirth.Value.Year, fp.DateOfBirth.Value.Month, fp.DateOfBirth.Value.Day);
             fp.FirstName = firstname ?? fp.FirstName;
             fp.LastName = lastname ?? fp.LastName;
             if (id != null) fp.Id = (int) id;
