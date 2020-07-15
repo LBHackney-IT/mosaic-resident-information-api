@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MosaicResidentInformationApi.V1.Boundary.Requests;
 using MosaicResidentInformationApi.V1.Boundary.Responses;
@@ -20,6 +21,7 @@ namespace MosaicResidentInformationApi.V1.UseCase
 
         public ResidentInformationList Execute(ResidentQueryParam rqp, int cursor, int limit)
         {
+            Console.WriteLine("In UseCase method, about to call the gateway");
             CheckPostcodeValid(rqp);
             limit = limit < 10 ? 10 : limit;
             limit = limit > 100 ? 100 : limit;
@@ -27,6 +29,8 @@ namespace MosaicResidentInformationApi.V1.UseCase
                 rqp.Postcode, rqp.Address);
 
             var nextCursor = residents.Count == limit ? residents.Max(r => r.MosaicId) : "";
+
+            Console.WriteLine("Leaving UseCase method, about to create response");
             return new ResidentInformationList
             {
                 Residents = residents.ToResponse(),

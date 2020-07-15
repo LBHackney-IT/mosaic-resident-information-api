@@ -37,15 +37,26 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .Where(a => a.Person.Id > cursor)
                 .ToList();
 
+            Console.WriteLine($"{addressesFilteredByPostcode.FirstOrDefault()?.AddressId}");
+
+            Console.WriteLine("In gateway method, got addresses");
+
             var peopleWithAddresses = addressesFilteredByPostcode
                 .GroupBy(address => address.Person, MapPersonAndAddressesToResidentInformation)
                 .ToList();
+
+            Console.WriteLine("In gateway method, got people with addresses");
+            Console.WriteLine($"{peopleWithAddresses?.FirstOrDefault()?.FirstName}");
 
             var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
                 ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
                 : new List<ResidentInformation>();
 
+            Console.WriteLine("In gateway method, got people without an address");
+
             var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
+
+            Console.WriteLine("Leaving gateway method, about to return domain object");
 
             return allPeople.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
         }
