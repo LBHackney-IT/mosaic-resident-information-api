@@ -48,17 +48,17 @@ namespace MosaicResidentInformationApi.V1.Gateways
             Console.WriteLine("In gateway method, got people with addresses");
             Console.WriteLine($"{peopleWithAddresses?.FirstOrDefault()?.FirstName}");
 
-            var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
-                ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
-                : new List<ResidentInformation>();
+            // var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
+            //     ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
+            //     : new List<ResidentInformation>();
 
             Console.WriteLine("In gateway method, got people without an address");
-
-            var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
+            //
+            // var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
 
             Console.WriteLine("Leaving gateway method, about to return domain object");
 
-            return allPeople.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
+            return peopleWithAddresses.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
         }
 
         public ResidentInformation GetEntityById(long id)
