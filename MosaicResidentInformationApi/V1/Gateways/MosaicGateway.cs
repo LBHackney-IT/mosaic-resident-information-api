@@ -22,11 +22,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
         public List<ResidentInformation> GetAllResidents(int cursor, int limit, string firstname = null,
             string lastname = null, string postcode = null, string address = null)
         {
-            Console.WriteLine("In gateway method, about to make the query");
             var firstNameSearchPattern = GetSearchPattern(firstname);
             var lastNameSearchPattern = GetSearchPattern(lastname);
             var addressSearchPattern = GetSearchPattern(address);
             var postcodeSearchPattern = GetSearchPattern(postcode);
+
+            Console.WriteLine("Querying for addresses");
 
             var addressesFilteredByPostcode = _mosaicContext.Addresses
                 .Include(a => a.Person)
@@ -37,28 +38,29 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .Where(a => a.Person.Id > cursor)
                 .ToList();
 
+            Console.WriteLine("Got addresses from database");
             Console.WriteLine($"{addressesFilteredByPostcode.FirstOrDefault()?.AddressId}");
 
-            Console.WriteLine("In gateway method, got addresses");
+            Console.WriteLine("Querying for people without addresses");
 
+            var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
+                ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
+                : new List<ResidentInformation>();
+
+            Console.WriteLine("Got people without an address");
+            Console.WriteLine($"{peopleWithNoAddress.FirstOrDefault()?.FirstName}");
+
+            Console.WriteLine("Map people with addresses to Domain Object");
             var peopleWithAddresses = addressesFilteredByPostcode
                 .GroupBy(address => address.Person, MapPersonAndAddressesToResidentInformation)
                 .ToList();
 
-            Console.WriteLine("In gateway method, got people with addresses");
-            Console.WriteLine($"{peopleWithAddresses?.FirstOrDefault()?.FirstName}");
-
-            // var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
-            //     ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
-            //     : new List<ResidentInformation>();
-
-            Console.WriteLine("In gateway method, got people without an address");
-            //
-            // var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
+            Console.WriteLine("Add people without addresses to Domain Object");
+            var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
 
             Console.WriteLine("Leaving gateway method, about to return domain object");
 
-            return peopleWithAddresses.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
+            return allPeople.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
         }
 
         public ResidentInformation GetEntityById(long id)
