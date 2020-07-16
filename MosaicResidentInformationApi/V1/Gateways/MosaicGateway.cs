@@ -84,7 +84,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .Where(p => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(p.LastName, lastNameSearchPattern))
                 .Where(p => p.Id > cursor)
                 .ToList()
-                .Where(p => addressesFilteredByPostcode.All(add => add.PersonId != p.Id))
+                .Where(p => addressesFilteredByPostcode.FirstOrDefault().PersonId != p.Id)
                 .Select(person =>
                 {
                     var domainPerson = person.ToDomain();
