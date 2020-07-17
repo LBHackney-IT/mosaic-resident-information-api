@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
+using Newtonsoft.Json;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
+using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
 namespace MosaicResidentInformationApi.V1.Gateways
@@ -28,6 +31,54 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var postcodeSearchPattern = GetSearchPattern(postcode);
 
             Console.WriteLine("Querying for addresses");
+
+            var queryResponse = (from person in _mosaicContext.Persons
+                                 where string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName, firstNameSearchPattern)
+                                 where string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern)
+                                 where person.Id > cursor
+                                 join a in _mosaicContext.Addresses on person.Id equals a.PersonId into joinedTable
+                                 from addressInfo in joinedTable.DefaultIfEmpty()
+                                 where string.IsNullOrEmpty(address) ||
+                                       EF.Functions.ILike(addressInfo.AddressLines.Replace(" ", ""), addressSearchPattern)
+                                 where string.IsNullOrEmpty(postcode) ||
+                                       EF.Functions.ILike(addressInfo.PostCode.Replace(" ", ""), postcodeSearchPattern)
+                                 orderby person.Id
+                                 select new
+                                 {
+                                     PersonId = person.Id,
+                                     PersonFirstName = person.FirstName,
+                                     PersonLastName = person.LastName,
+                                     PersonNhsNumber = person.NhsNumber,
+                                     PersonDateOfBirth = person.DateOfBirth,
+                                     AddressPerson = person,
+                                     AddressEndDate = addressInfo.EndDate,
+                                     AddressPersonId = addressInfo.PersonId,
+                                     AddressLines = addressInfo.AddressLines,
+                                     PostCode = addressInfo.PostCode,
+                                     Uprn = addressInfo.Uprn
+                                 }).Take(limit).ToList();
+
+            var grouptest = queryResponse.GroupBy(x => x.PersonId, (y, z) => new ResidentInformation
+            {
+                MosaicId = y.ToString(),
+                DateOfBirth = z.FirstOrDefault().PersonDateOfBirth.ToString(),
+                FirstName = z.FirstOrDefault().PersonFirstName,
+                LastName = z.FirstOrDefault().PersonLastName,
+                NhsNumber = z.FirstOrDefault().PersonNhsNumber.ToString(),
+                AddressList = z.Select(a => new DomainAddress
+                {
+                    AddressLine1 = a.AddressLines,
+                    PostCode = a.PostCode
+                }).ToList(),
+                Uprn = GetMostRecentUprn(z.Select(a => new Address
+                {
+                    EndDate = a.AddressEndDate,
+                    Uprn = a.Uprn
+                }))
+            });
+
+            Console.WriteLine(JsonConvert.SerializeObject(grouptest));
+
 
             var addressesFilteredByPostcode = _mosaicContext.Addresses
                 .Include(a => a.Person)
@@ -84,7 +135,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 .Where(p => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(p.LastName, lastNameSearchPattern))
                 .Where(p => p.Id > cursor)
                 .ToList()
-                .Where(p => addressesFilteredByPostcode.FirstOrDefault().PersonId != p.Id)
+                .Where(p => addressesFilteredByPostcode.All(add => add.PersonId != p.Id))
                 .Select(person =>
                 {
                     var domainPerson = person.ToDomain();
