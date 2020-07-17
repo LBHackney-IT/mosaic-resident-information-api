@@ -38,14 +38,16 @@ namespace MosaicResidentInformationApi.V1.Gateways
                                  where string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName, firstNameSearchPattern)
                                  where string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern)
                                  where person.Id > cursor
-                                 join addressInfo in _mosaicContext.Addresses.DefaultIfEmpty() on person.Id equals addressInfo.PersonId
-                                 join tn in _mosaicContext.TelephoneNumbers.DefaultIfEmpty() on person.Id equals tn.PersonId
+                                 join a in _mosaicContext.Addresses on person.Id equals a.PersonId into joinTable
+                                 from addressInfo in joinTable.DefaultIfEmpty()
+                                 join telephone in _mosaicContext.TelephoneNumbers on person.Id equals telephone.PersonId into joinTable2
+                                 from tn in joinTable2.DefaultIfEmpty()
                                  where string.IsNullOrEmpty(address) ||
                                        EF.Functions.ILike(addressInfo.AddressLines.Replace(" ", ""), addressSearchPattern)
                                  where string.IsNullOrEmpty(postcode) ||
                                        EF.Functions.ILike(addressInfo.PostCode.Replace(" ", ""), postcodeSearchPattern)
                                  orderby person.Id
-                                 select new
+                                 select new QueryResponse
                                  {
                                      PersonId = person.Id,
                                      PersonFirstName = person.FirstName,
@@ -60,67 +62,43 @@ namespace MosaicResidentInformationApi.V1.Gateways
                                      Uprn = addressInfo != null ? addressInfo.Uprn : null,
                                      TelNumber = tn != null ? tn.Number : null,
                                      TelType = tn != null ? tn.Type : null
-                                 }).Take(limit).ToList();
+                                 }).ToList();
 
             var grouptest = queryResponse.GroupBy(x => x.PersonId, (y, z) => new ResidentInformation
             {
                 MosaicId = y.ToString(),
-                DateOfBirth = z.FirstOrDefault().PersonDateOfBirth.ToString(),
+                DateOfBirth = z.FirstOrDefault().PersonDateOfBirth?.ToString("O"),
                 FirstName = z.FirstOrDefault().PersonFirstName,
                 LastName = z.FirstOrDefault().PersonLastName,
                 NhsNumber = z.FirstOrDefault().PersonNhsNumber.ToString(),
-                AddressList = z.Select(a => new DomainAddress
-                {
-                    AddressLine1 = a.AddressLines,
-                    PostCode = a.PostCode
-                }).Distinct().ToList(),
-                Uprn = GetMostRecentUprn(z.Select(a => new Address
-                {
-                    EndDate = a.AddressEndDate,
-                    Uprn = a.Uprn
-                })),
-                PhoneNumberList = z.Select(tn => new PhoneNumber
-                {
-                    Number = tn.TelNumber,
-                    Type = Enum.Parse<PhoneType>(tn.TelType)
-                }).Distinct().ToList()
-            });
-
-            Console.WriteLine(JsonConvert.SerializeObject(grouptest));
+                AddressList = MapAddress(z),
+                Uprn = GetMostRecentUprn(z),
+                PhoneNumberList = MapPhoneNumbers(z)
+            }).Take(limit).ToList();
 
 
-            var addressesFilteredByPostcode = _mosaicContext.Addresses
-                .Include(a => a.Person)
-                .Where(a => string.IsNullOrEmpty(address) || EF.Functions.ILike(a.AddressLines.Replace(" ", ""), addressSearchPattern))
-                .Where(a => string.IsNullOrEmpty(postcode) || EF.Functions.ILike(a.PostCode.Replace(" ", ""), postcodeSearchPattern))
-                .Where(a => string.IsNullOrEmpty(firstname) || EF.Functions.ILike(a.Person.FirstName, firstNameSearchPattern))
-                .Where(a => string.IsNullOrEmpty(lastname) || EF.Functions.ILike(a.Person.LastName, lastNameSearchPattern))
-                .Where(a => a.Person.Id > cursor)
-                .ToList();
+            return grouptest;
+        }
 
-            Console.WriteLine("Got addresses from database");
-            Console.WriteLine($"{addressesFilteredByPostcode.FirstOrDefault()?.AddressId}");
+        private static List<PhoneNumber> MapPhoneNumbers(IEnumerable<QueryResponse> z)
+        {
+            var phoneNumberList = z.Where(tn => tn.TelNumber != null && tn.TelType != null).Select(tn => new PhoneNumber
+            {
+                Number = tn.TelNumber,
+                Type = Enum.Parse<PhoneType>(tn.TelType)
+            }).Distinct().ToList();
 
-            Console.WriteLine("Querying for people without addresses");
+            return !phoneNumberList.Any() ? null : phoneNumberList;
+        }
 
-            var peopleWithNoAddress = string.IsNullOrEmpty(postcode) && string.IsNullOrEmpty(address)
-                ? QueryPeopleWithNoAddressByName(firstname, lastname, addressesFilteredByPostcode, cursor)
-                : new List<ResidentInformation>();
+        private static List<DomainAddress> MapAddress(IEnumerable<QueryResponse> q)
+        {
+            var addressList = q.Where(a => a.AddressLines != null && a.PostCode != null).Select(a => new DomainAddress
+            {
+                AddressLine1 = a.AddressLines, PostCode = a.PostCode
+            }).Distinct().ToList();
 
-            Console.WriteLine("Got people without an address");
-            Console.WriteLine($"{peopleWithNoAddress.FirstOrDefault()?.FirstName}");
-
-            Console.WriteLine("Map people with addresses to Domain Object");
-            var peopleWithAddresses = addressesFilteredByPostcode
-                .GroupBy(address => address.Person, MapPersonAndAddressesToResidentInformation)
-                .ToList();
-
-            Console.WriteLine("Add people without addresses to Domain Object");
-            var allPeople = peopleWithAddresses.Concat(peopleWithNoAddress);
-
-            Console.WriteLine("Leaving gateway method, about to return domain object");
-
-            return allPeople.Select(AttachPhoneNumberToPerson).OrderBy(a => a.MosaicId).Take(limit).ToList();
+            return !addressList.Any() ? null : addressList;
         }
 
         public ResidentInformation GetEntityById(long id)
@@ -173,6 +151,14 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 : null;
             return resident;
         }
+        private static string GetMostRecentUprn(IEnumerable<QueryResponse> q)
+        {
+            var addressesForPerson = q.Where(u => u.Uprn != null)
+                .Select(a => new Address {EndDate = a.AddressEndDate, Uprn = a.Uprn});
+
+            return GetMostRecentUprn(addressesForPerson);
+        }
+
         private static string GetMostRecentUprn(IEnumerable<Address> addressesForPerson)
         {
             if (!addressesForPerson.Any()) return null;
@@ -189,5 +175,23 @@ namespace MosaicResidentInformationApi.V1.Gateways
         {
             return $"%{str?.Replace(" ", "")}%";
         }
+
+        private class QueryResponse
+        {
+            public long PersonId { get; set; }
+            public string PersonFirstName { get; set; }
+            public string PersonLastName { get; set; }
+            public long? PersonNhsNumber { get; set; }
+            public DateTime? PersonDateOfBirth { get; set; }
+            public Person AddressPerson { get; set; }
+            public DateTime? AddressEndDate { get; set; }
+            public long? AddressPersonId { get; set; }
+            public string AddressLines { get; set; }
+            public string PostCode { get; set; }
+            public long? Uprn { get; set; }
+            public string TelNumber { get; set; }
+            public string TelType { get; set; }
+        }
     }
+
 }
