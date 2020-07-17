@@ -32,52 +32,61 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var addressSearchPattern = GetSearchPattern(address);
             var postcodeSearchPattern = GetSearchPattern(postcode);
 
+            var newQueryResponse = new QueryResponse();
+
             Console.WriteLine("Querying for addresses");
 
             var queryResponse = (from person in _mosaicContext.Persons
-                                 where string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName, firstNameSearchPattern)
-                                 where string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern)
-                                 where person.Id > cursor
-                                 join a in _mosaicContext.Addresses on person.Id equals a.PersonId into joinTable
-                                 from addressInfo in joinTable.DefaultIfEmpty()
-                                 join telephone in _mosaicContext.TelephoneNumbers on person.Id equals telephone.PersonId into joinTable2
-                                 from tn in joinTable2.DefaultIfEmpty()
-                                 where string.IsNullOrEmpty(address) ||
-                                       EF.Functions.ILike(addressInfo.AddressLines.Replace(" ", ""), addressSearchPattern)
-                                 where string.IsNullOrEmpty(postcode) ||
-                                       EF.Functions.ILike(addressInfo.PostCode.Replace(" ", ""), postcodeSearchPattern)
-                                 orderby person.Id
-                                 select new QueryResponse
-                                 {
-                                     PersonId = person.Id,
-                                     PersonFirstName = person.FirstName,
-                                     PersonLastName = person.LastName,
-                                     PersonNhsNumber = person.NhsNumber,
-                                     PersonDateOfBirth = person.DateOfBirth,
-                                     AddressPerson = person,
-                                     AddressEndDate = addressInfo != null ? addressInfo.EndDate: null,
-                                     AddressPersonId = addressInfo != null ? addressInfo.PersonId : null,
-                                     AddressLines = addressInfo != null ? addressInfo.AddressLines : null,
-                                     PostCode = addressInfo != null ? addressInfo.PostCode : null,
-                                     Uprn = addressInfo != null ? addressInfo.Uprn : null,
-                                     TelNumber = tn != null ? tn.Number : null,
-                                     TelType = tn != null ? tn.Type : null
-                                 }).ToList();
+                where string.IsNullOrEmpty(firstname) || EF.Functions.ILike(person.FirstName, firstNameSearchPattern)
+                where string.IsNullOrEmpty(lastname) || EF.Functions.ILike(person.LastName, lastNameSearchPattern)
+                where person.Id > cursor
+                join a in _mosaicContext.Addresses on person.Id equals a.PersonId into joinTable
+                from addressInfo in joinTable.DefaultIfEmpty()
+                join telephone in _mosaicContext.TelephoneNumbers on person.Id equals telephone.PersonId into joinTable2
+                from tn in joinTable2.DefaultIfEmpty()
+                where string.IsNullOrEmpty(address) ||
+                      EF.Functions.ILike(addressInfo.AddressLines.Replace(" ", ""), addressSearchPattern)
+                where string.IsNullOrEmpty(postcode) ||
+                      EF.Functions.ILike(addressInfo.PostCode.Replace(" ", ""), postcodeSearchPattern)
+                orderby person.Id
+                group new {p = person, a = addressInfo, t = tn} by person.Id into groupedPeople
+                select new
+                {
+                    person = groupedPeople.Key,
+                    grouping = groupedPeople
+                }).ToList();
 
-            var grouptest = queryResponse.GroupBy(x => x.PersonId, (y, z) => new ResidentInformation
-            {
-                MosaicId = y.ToString(),
-                DateOfBirth = z.FirstOrDefault().PersonDateOfBirth?.ToString("O"),
-                FirstName = z.FirstOrDefault().PersonFirstName,
-                LastName = z.FirstOrDefault().PersonLastName,
-                NhsNumber = z.FirstOrDefault().PersonNhsNumber.ToString(),
-                AddressList = MapAddress(z),
-                Uprn = GetMostRecentUprn(z),
-                PhoneNumberList = MapPhoneNumbers(z)
-            }).Take(limit).ToList();
+                // select new QueryResponse
+                //                  {
+                //                      PersonId = person.Id,
+                //                      PersonFirstName = person.FirstName,
+                //                      PersonLastName = person.LastName,
+                //                      PersonNhsNumber = person.NhsNumber,
+                //                      PersonDateOfBirth = person.DateOfBirth,
+                //                      AddressPerson = person,
+                //                      AddressEndDate = addressInfo != null ? addressInfo.EndDate: null,
+                //                      AddressPersonId = addressInfo != null ? addressInfo.PersonId : null,
+                //                      AddressLines = addressInfo != null ? addressInfo.AddressLines : null,
+                //                      PostCode = addressInfo != null ? addressInfo.PostCode : null,
+                //                      Uprn = addressInfo != null ? addressInfo.Uprn : null,
+                //                      TelNumber = tn != null ? tn.Number : null,
+                //                      TelType = tn != null ? tn.Type : null
+                //                  }).ToList();
+
+            // var grouptest = queryResponse.GroupBy(x => x.PersonId, (y, z) => new ResidentInformation
+            // {
+            //     MosaicId = y.ToString(),
+            //     DateOfBirth = z.FirstOrDefault().PersonDateOfBirth?.ToString("O"),
+            //     FirstName = z.FirstOrDefault().PersonFirstName,
+            //     LastName = z.FirstOrDefault().PersonLastName,
+            //     NhsNumber = z.FirstOrDefault().PersonNhsNumber.ToString(),
+            //     AddressList = MapAddress(z),
+            //     Uprn = GetMostRecentUprn(z),
+            //     PhoneNumberList = MapPhoneNumbers(z)
+            // }).Take(limit).ToList();
 
 
-            return grouptest;
+            return new List<ResidentInformation>();
         }
 
         private static List<PhoneNumber> MapPhoneNumbers(IEnumerable<QueryResponse> z)
