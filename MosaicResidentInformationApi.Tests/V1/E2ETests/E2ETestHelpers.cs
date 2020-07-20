@@ -24,6 +24,7 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
 
             return new ResidentInformation
             {
+                MosaicId = person.Id.ToString(),
                 FirstName = person.FirstName,
                 LastName = person.LastName,
                 Uprn = address.Uprn.ToString(),

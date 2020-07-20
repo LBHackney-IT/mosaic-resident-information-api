@@ -48,8 +48,9 @@ namespace MosaicResidentInformationApi.V1.Gateways
                             string.IsNullOrEmpty(address) || EF.Functions.ILike(add.AddressLines.Replace(" ", ""), addressSearchPattern))
                         .Where(add =>
                             string.IsNullOrEmpty(postcode) || EF.Functions.ILike(add.PostCode.Replace(" ", ""), postcodeSearchPattern))
+                        .Distinct()
                         .ToList(),
-                    TelephoneNumbers = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == p.Id).ToList()
+                    TelephoneNumbers = _mosaicContext.TelephoneNumbers.Where(n => n.PersonId == p.Id).Distinct().ToList()
                 }).ToList();
 
             return dbRecords.Select(x => new ResidentInformation

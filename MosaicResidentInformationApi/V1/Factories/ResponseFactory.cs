@@ -16,6 +16,7 @@ namespace MosaicResidentInformationApi.V1.Factories
         {
             return new ResidentInformationResponse
             {
+                MosaicId = domain.MosaicId,
                 FirstName = domain.FirstName,
                 LastName = domain.LastName,
                 NhsNumber = domain.NhsNumber,
