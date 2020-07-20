@@ -108,7 +108,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var phoneNumberList = z.Where(tn => tn.Number != null && tn.Type != null).Select(tn => new PhoneNumber
             {
                 Number = tn.Number,
-                Type = Enum.Parse<PhoneType>(tn.Type)
+                Type = Enum.Parse<PhoneType>(RenameMobileSecondaryOrExDirectoryPhoneTypes(tn.Type))
             }).Distinct().ToList();
 
             return !phoneNumberList.Any() ? null : phoneNumberList;
@@ -122,6 +122,19 @@ namespace MosaicResidentInformationApi.V1.Gateways
             }).Distinct().ToList();
 
             return !addressList.Any() ? null : addressList;
+        }
+
+        private static string RenameMobileSecondaryOrExDirectoryPhoneTypes(string phoneType)
+        {
+            switch (phoneType)
+            {
+                case "Mobile - Secondary":
+                    return "Secondary" ;
+                case "Ex-directory (do not disclose number)":
+                    return "ExDirectory";
+                default:
+                    return phoneType;
+            }
         }
 
         public ResidentInformation GetEntityById(long id)
