@@ -9,6 +9,6 @@ namespace MosaicResidentInformationApi.V1.Boundary.Responses
         /// <example>
         /// Mobile
         /// </example>
-        public PhoneType PhoneType { get; set; }
+        public string PhoneType { get; set; }
     }
 }

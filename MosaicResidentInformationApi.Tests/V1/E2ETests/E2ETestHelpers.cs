@@ -32,7 +32,7 @@ namespace MosaicResidentInformationApi.Tests.V1.E2ETests
                 PhoneNumber =
                     new List<Phone>
                     {
-                        new Phone {PhoneNumber = phone.Number, PhoneType = Enum.Parse<PhoneType>(phone.Type)}
+                        new Phone {PhoneNumber = phone.Number, PhoneType = phone.Type}
                     },
                 DateOfBirth = person.DateOfBirth?.ToString("O"),
                 AddressList = new List<Address>

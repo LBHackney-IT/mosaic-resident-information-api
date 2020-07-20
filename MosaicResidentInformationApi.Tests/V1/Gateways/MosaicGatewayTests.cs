@@ -92,15 +92,14 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             var databaseEntity = AddPersonRecordToDatabase();
 
             var phoneNumber = TestHelper.CreateDatabaseTelephoneNumberForPersonId(databaseEntity.Id);
-            var type = PhoneType.Primary.ToString();
-            phoneNumber.Type = type;
+
             MosaicContext.TelephoneNumbers.Add(phoneNumber);
             MosaicContext.SaveChanges();
 
             var response = _classUnderTest.GetEntityById(databaseEntity.Id);
             response.PhoneNumberList.Should().BeEquivalentTo(new List<PhoneNumber>
             {
-                new PhoneNumber {Number = phoneNumber.Number, Type = PhoneType.Primary}
+                new PhoneNumber {Number = phoneNumber.Number, Type = phoneNumber.Type}
             });
         }
 
@@ -148,7 +147,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             var databaseEntity = AddPersonRecordToDatabase();
 
             var phoneNumber = TestHelper.CreateDatabaseTelephoneNumberForPersonId(databaseEntity.Id);
-            var type = PhoneType.Primary.ToString();
+            var type = "Primary";
             phoneNumber.Type = type;
             MosaicContext.TelephoneNumbers.Add(phoneNumber);
             MosaicContext.SaveChanges();

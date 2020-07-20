@@ -30,8 +30,11 @@ namespace MosaicResidentInformationApi.V1.Factories
 
         public static PhoneNumber ToDomain(this TelephoneNumber number)
         {
-            var canParseType = Enum.TryParse<PhoneType>(number.Type, out var type);
-            return canParseType ? new PhoneNumber { Number = number.Number, Type = type } : null;
+            return new PhoneNumber
+            {
+                Number = number.Number,
+                Type = number.Type
+            };
         }
 
         public static Address ToDomain(this DbAddress address)

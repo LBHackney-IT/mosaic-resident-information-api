@@ -108,7 +108,7 @@ namespace MosaicResidentInformationApi.V1.Gateways
             var phoneNumberList = z.Where(tn => tn.Number != null && tn.Type != null).Select(tn => new PhoneNumber
             {
                 Number = tn.Number,
-                Type = Enum.Parse<PhoneType>(RenameMobileSecondaryOrExDirectoryPhoneTypes(tn.Type))
+                Type = tn.Type
             }).Distinct().ToList();
 
             return !phoneNumberList.Any() ? null : phoneNumberList;

@@ -37,23 +37,16 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
             });
         }
 
-        [Test]
-        public void IfPhoneTypeCanNotBeParsedReturnsNull()
-        {
-            var dbPhone = new TelephoneNumber { Number = "number", Type = "not a real type" };
-            dbPhone.ToDomain().Should().BeNull();
-        }
-
-        [TestCase(PhoneType.Fax, "Fax")]
-        [TestCase(PhoneType.Home, "Home")]
-        public void IfPhoneTypeCanBeParsedReturnsPhoneNumber(PhoneType type, string typeString)
+        [TestCase("Fax")]
+        [TestCase("Home")]
+        public void ItMapsTelephoneDetailsToDomainObject(string phoneType)
         {
             var number = _fixture.Create<string>();
-            var dbPhone = new TelephoneNumber { Number = number, Type = typeString };
+            var dbPhone = new TelephoneNumber { Number = number, Type = phoneType };
             dbPhone.ToDomain().Should().BeEquivalentTo(new PhoneNumber
             {
                 Number = number,
-                Type = type
+                Type = phoneType
             });
         }
 

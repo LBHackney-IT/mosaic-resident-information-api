@@ -43,9 +43,13 @@ namespace MosaicResidentInformationApi.Tests.V1.Helper
         {
             var faker = new Fixture();
 
+            var random = new Random();
+            var possiblePhoneTypes = new[] { "Primary", "Work", "Home", "Pager", "Mobile - Secondary", "Mobile", "Fax", "Ex-directory (do not disclose number)" };
+            var randomPhoneTypeIndex = random.Next(0, possiblePhoneTypes.Length);
+
             return faker.Build<TelephoneNumber>()
                 .With(tel => tel.PersonId, personId)
-                .With(tel => tel.Type, PhoneType.Mobile.ToString)
+                .With(tel => tel.Type, possiblePhoneTypes[randomPhoneTypeIndex])
                 .Without(tel => tel.Id)
                 .Without(tel => tel.Person)
                 .Create();

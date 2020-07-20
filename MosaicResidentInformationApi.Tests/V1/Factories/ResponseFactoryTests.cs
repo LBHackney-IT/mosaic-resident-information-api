@@ -37,7 +37,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
                     new PhoneNumber
                     {
                         Number = "number",
-                        Type = PhoneType.Fax
+                        Type = "Fax"
                     }
                 },
             };
@@ -64,7 +64,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Factories
                     new Phone
                     {
                         PhoneNumber = "number",
-                        PhoneType = PhoneType.Fax
+                        PhoneType = "Fax"
                     }
                 },
             };
