@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace MosaicResidentInformationApi.V1.Boundary.Responses
 {
     public enum PhoneType
@@ -22,5 +24,17 @@ namespace MosaicResidentInformationApi.V1.Boundary.Responses
         /// Work
         /// </summary>
         Work,
+        /// <summary>
+        /// Pager
+        /// </summary>
+        Pager,
+        /// <summary>
+        /// Mobile - Secondary
+        /// </summary>
+        [Description("Mobile - Secondary")] Secondary,
+        /// <summary>
+        /// Ex-directory (do not disclose number)
+        /// </summary>
+        [Description("Ex-directory (do not disclose number)")] ExDirectory
     }
 }
