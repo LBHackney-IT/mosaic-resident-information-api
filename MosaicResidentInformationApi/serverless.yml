@@ -21,7 +21,7 @@ functions:
           path: /{proxy+}
           method: ANY
           authorizer:
-            arn: ${self:custom.authorizerArn.${opt:stage}}
+            arn: ${ssm:/platform-apis-lambda-authorizer-arn}
             type: request
           private: true
 resources:
@@ -76,10 +76,6 @@ resources:
                     - "lambda:InvokeFunction"
                   Resource: "*"
 custom:
-  authorizerArn:
-    development: arn:aws:lambda:eu-west-2:859159924354:function:api-auth-token-generator-development-apiauthverifytoken
-    staging: arn:aws:lambda:eu-west-2:715003523189:function:api-auth-token-generator-staging-apiauthverifytoken
-    production: arn:aws:lambda:eu-west-2:153306643385:function:api-auth-token-generator-production-apiauthverifytoken
   vpc:
     development:
       securityGroupIds:
