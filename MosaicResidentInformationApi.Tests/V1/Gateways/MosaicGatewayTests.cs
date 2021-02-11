@@ -27,6 +27,8 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             _classUnderTest = new MosaicGateway(MosaicContext);
         }
 
+        #region GetResidentInformation
+
         [Test]
         public void GetResidentInformationByPersonId_WhenThereAreNoMatchingRecords_ReturnsNull()
         {
@@ -450,6 +452,19 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
                 .Should().BeEquivalentTo(new List<string> { "3", "4", "5" });
         }
 
+        #endregion
+
+        #region GetCaseNote
+
+        [Test]
+        public void GetCaseNotesByPersonId_WhenThereAreNoMatchingRecords_ReturnsNull()
+        {
+            var response = _classUnderTest.GetCaseNotesByPersonId();
+
+            response.Should().BeNull();
+        }
+
+        #endregion
 
         private Person AddPersonRecordToDatabase(string firstname = null, string lastname = null, int? id = null)
         {
@@ -458,5 +473,7 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             MosaicContext.SaveChanges();
             return databaseEntity;
         }
+
+
     }
 }

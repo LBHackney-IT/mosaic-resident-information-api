@@ -17,12 +17,15 @@ namespace MosaicResidentInformationApi.V1.Controllers
     {
         private IGetAllResidentsUseCase _getAllResidentsUseCase;
         private IGetEntityByIdUseCase _getEntityByIdUseCase;
-        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase, IGetEntityByIdUseCase getEntityByIdUseCase)
+
+        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase,
+            IGetEntityByIdUseCase getEntityByIdUseCase)
         {
             _getAllResidentsUseCase = getAllResidentsUseCase;
             _getEntityByIdUseCase = getEntityByIdUseCase;
 
         }
+
         /// <summary>
         /// Returns list of contacts who share the query search parameter
         /// </summary>
@@ -62,5 +65,24 @@ namespace MosaicResidentInformationApi.V1.Controllers
             }
         }
 
+        // /// <summary>
+        // /// Returns list of case notes for a Mosaic ID
+        // /// </summary>
+        // /// <response code="200">Success. Returns a list of matching case notes</response>
+        // /// <response code="400">Invalid Query Parameter.</response>
+        // /// [ProducesResponseType(typeof(CaseNotes), StatusCodes.Status200OK)]
+        // [HttpGet]
+        // [Route("{mosaicId}/casenotes")]
+        // public IActionResult ViewCaseNotes(int mosaicId)
+        // {
+        //     try
+        //     {
+        //         return Ok(_getCaseNotesByPersonIdUseCase.Execute(mosaicId));
+        //     }
+        //     catch (ResidentNotFoundException)
+        //     {
+        //         return NotFound();
+        //     }
+        // }
     }
 }

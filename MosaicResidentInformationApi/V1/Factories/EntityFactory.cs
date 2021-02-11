@@ -5,6 +5,8 @@ using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Address = MosaicResidentInformationApi.V1.Domain.Address;
+using CaseNote = MosaicResidentInformationApi.V1.Domain.CaseNote;
+using DbCaseNote = MosaicResidentInformationApi.V1.Infrastructure.CaseNote;
 using DbAddress = MosaicResidentInformationApi.V1.Infrastructure.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
@@ -49,6 +51,17 @@ namespace MosaicResidentInformationApi.V1.Factories
                 EndDate = address.EndDate,
                 ContactAddressFlag = address.ContactAddressFlag,
                 DisplayAddressFlag = address.DisplayAddressFlag
+            };
+        }
+
+        public static CaseNote ToDomain(this DbCaseNote note)
+        {
+            return new CaseNote
+            {
+                Id = note.Id,
+                PersonId = note.PersonId,
+                Title = note.Title,
+                Note = note.Note
             };
         }
     }

@@ -7,6 +7,7 @@ using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Infrastructure;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
+using CaseNote = MosaicResidentInformationApi.V1.Domain.CaseNote;
 using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using ResidentInformation = MosaicResidentInformationApi.V1.Domain.ResidentInformation;
 
@@ -66,6 +67,12 @@ namespace MosaicResidentInformationApi.V1.Gateways
             AttachPhoneNumberToPerson(person);
 
             return person;
+        }
+
+        public CaseNoteList GetCaseNotesByPersonId()
+        {
+            var databaseRecord = _mosaicContext.CaseNotes.First().ToDomain();
+            return new CaseNoteList { PersonCaseNoteList = new List<CaseNote> { databaseRecord } };
         }
 
         private List<long> PeopleIds(int cursor, int limit, long? id, string firstname, string lastname, string dateOfBirth, string contextflag)
