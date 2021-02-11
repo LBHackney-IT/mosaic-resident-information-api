@@ -10,6 +10,7 @@ using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using NUnit.Framework;
 using Address = MosaicResidentInformationApi.V1.Infrastructure.Address;
+using CaseNote = MosaicResidentInformationApi.V1.Infrastructure.CaseNote;
 using DomainAddress = MosaicResidentInformationApi.V1.Domain.Address;
 using Person = MosaicResidentInformationApi.V1.Infrastructure.Person;
 
@@ -459,9 +460,73 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
         [Test]
         public void GetCaseNotesByPersonId_WhenThereAreNoMatchingRecords_ReturnsNull()
         {
-            var response = _classUnderTest.GetCaseNotesByPersonId();
+            var response = _classUnderTest.GetCaseNotesByPersonId(123);
 
-            response.Should().BeNull();
+            response.Should().BeEmpty();
+        }
+
+        [Test]
+        public void GetCaseNotesByPersonId_ReturnsACaseNoteForASpecificPerson()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var databaseCaseNote = AddCaseNoteToDatabase(databaseEntity);
+
+            var response = _classUnderTest.GetCaseNotesByPersonId(databaseEntity.Id);
+
+            response.Count.Should().Be(1);
+
+            var retrievedCaseNote = response.First();
+
+            retrievedCaseNote.Id.Should().Be(databaseCaseNote.Id);
+            retrievedCaseNote.PersonId.Should().Be(databaseCaseNote.PersonId);
+            retrievedCaseNote.Title.Should().Be(databaseCaseNote.Title);
+            retrievedCaseNote.Note.Should().Be(databaseCaseNote.Note);
+        }
+
+
+
+        [Test]
+        public void GetCaseNotesByPersonId_ReturnsAllCaseNotesForASpecificPerson()
+        {
+            var databaseEntity = AddPersonRecordToDatabase();
+
+            var databaseCaseNote = AddCaseNoteToDatabase(databaseEntity);
+
+            var databaseCaseNote2 = AddCaseNoteToDatabase(databaseEntity);
+
+            var databaseCaseNote3 = AddCaseNoteToDatabase(databaseEntity);
+
+            var response = _classUnderTest.GetCaseNotesByPersonId(databaseEntity.Id);
+
+            response.Count.Should().Be(3);
+
+            response.Should().ContainEquivalentOf(databaseCaseNote.ToDomain());
+            response.Should().ContainEquivalentOf(databaseCaseNote2.ToDomain());
+            response.Should().ContainEquivalentOf(databaseCaseNote3.ToDomain());
+        }
+
+        [Test]
+        public void GetCaseNotesByPersonId_WillNotReturnCaseNotesForADifferentPersonId()
+        {
+            var personOne = AddPersonRecordToDatabase();
+            var firstCaseNoteForPersonOne = AddCaseNoteToDatabase(personOne);
+            var secondCaseNoteForPersonOne = AddCaseNoteToDatabase(personOne);
+
+            var personTwo = AddPersonRecordToDatabase();
+            var firstCaseNoteForPersonTwo = AddCaseNoteToDatabase(personTwo);
+            var secondCaseNoteForPersonTwo = AddCaseNoteToDatabase(personTwo);
+
+            var response = _classUnderTest.GetCaseNotesByPersonId(personTwo.Id);
+
+            response.Count.Should().Be(2);
+
+            response.Should().ContainEquivalentOf(firstCaseNoteForPersonTwo.ToDomain());
+            response.Should().ContainEquivalentOf(secondCaseNoteForPersonTwo.ToDomain());
+
+
+            response.Should().NotContain(firstCaseNoteForPersonOne.ToDomain());
+            response.Should().NotContain(secondCaseNoteForPersonOne.ToDomain());
         }
 
         #endregion
@@ -474,6 +539,12 @@ namespace MosaicResidentInformationApi.Tests.V1.Gateways
             return databaseEntity;
         }
 
-
+        private CaseNote AddCaseNoteToDatabase(Person databaseEntity)
+        {
+            var databaseCaseNote = TestHelper.CreateDatabaseCaseNote(databaseEntity.Id);
+            MosaicContext.CaseNotes.Add(databaseCaseNote);
+            MosaicContext.SaveChanges();
+            return databaseCaseNote;
+        }
     }
 }

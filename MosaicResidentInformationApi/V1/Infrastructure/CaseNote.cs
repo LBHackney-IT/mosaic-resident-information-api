@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MosaicResidentInformationApi.V1.Infrastructure
 {
-    [Table("CASE_NOTES", Schema = "dbo")]
+    [Table("case_notes", Schema = "dbo")]
     public class CaseNote
     {
-        [Column("NOTE_ID")]
+        [Column("id")]
         [MaxLength(9)]
         public int Id { get; set; }
 
@@ -14,12 +14,11 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
         [MaxLength(9)]
         public int PersonId { get; set; }
 
-        [Column("TITLE")]
+        [Column("title")]
         [MaxLength(32)]
         public string Title { get; set; }
 
-        [Column("NOTE")]
+        [Column("note")]
         public string Note { get; set; }
-
     }
 }

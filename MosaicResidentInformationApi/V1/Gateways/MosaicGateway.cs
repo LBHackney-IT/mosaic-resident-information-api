@@ -69,10 +69,11 @@ namespace MosaicResidentInformationApi.V1.Gateways
             return person;
         }
 
-        public CaseNoteList GetCaseNotesByPersonId()
+        public List<CaseNote> GetCaseNotesByPersonId(long id)
         {
-            var databaseRecord = _mosaicContext.CaseNotes.First().ToDomain();
-            return new CaseNoteList { PersonCaseNoteList = new List<CaseNote> { databaseRecord } };
+            var databaseRecord = _mosaicContext.CaseNotes.Where(c => c.PersonId == id).ToList();
+
+            return databaseRecord.Select(x => x.ToDomain()).ToList();
         }
 
         private List<long> PeopleIds(int cursor, int limit, long? id, string firstname, string lastname, string dateOfBirth, string contextflag)
