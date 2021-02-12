@@ -20,5 +20,9 @@ namespace MosaicResidentInformationApi.V1.Infrastructure
 
         [Column("note")]
         public string Note { get; set; }
+
+        [Column("note_type")]
+        [MaxLength(16)]
+        public string NoteType { get; set; }
     }
 }
