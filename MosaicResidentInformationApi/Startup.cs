@@ -129,6 +129,7 @@ namespace MosaicResidentInformationApi
         {
             services.AddScoped<IGetAllResidentsUseCase, GetAllResidentsUseCase>();
             services.AddScoped<IGetEntityByIdUseCase, GetEntityByIdUseCase>();
+            services.AddScoped<IAddResidentUseCase, AddResidentUseCase>();
             services.AddScoped<IValidatePostcode, ValidatePostcode>();
         }
 

@@ -6,6 +6,7 @@ using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Domain;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
+using ResidentCannotBeAddedException = MosaicResidentInformationApi.V1.Domain.ResidentCannotBeAddedException;
 
 namespace MosaicResidentInformationApi.V1.Controllers
 {
@@ -17,12 +18,15 @@ namespace MosaicResidentInformationApi.V1.Controllers
     {
         private IGetAllResidentsUseCase _getAllResidentsUseCase;
         private IGetEntityByIdUseCase _getEntityByIdUseCase;
-        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase, IGetEntityByIdUseCase getEntityByIdUseCase)
+        private IAddResidentUseCase _addResidentUseCase;
+
+        public MosaicController(IGetAllResidentsUseCase getAllResidentsUseCase, IGetEntityByIdUseCase getEntityByIdUseCase, IAddResidentUseCase addResidentUseCase)
         {
             _getAllResidentsUseCase = getAllResidentsUseCase;
             _getEntityByIdUseCase = getEntityByIdUseCase;
-
+            _addResidentUseCase = addResidentUseCase;
         }
+
         /// <summary>
         /// Returns list of contacts who share the query search parameter
         /// </summary>
@@ -62,5 +66,25 @@ namespace MosaicResidentInformationApi.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Create a resident
+        /// </summary>
+        /// <response code="201">Created. Returns resident information</response>
+        /// <response code="400">Unable to create resident</response>
+        [ProducesResponseType(typeof(ResidentInformation), StatusCodes.Status201Created)]
+        [HttpPost]
+        public IActionResult AddResident([FromBody] AddResidentRequest addResidentRequest)
+        {
+            try
+            {
+                var response = _addResidentUseCase.Execute(addResidentRequest);
+
+                return CreatedAtAction("AddResident", new { id = response.MosaicId }, response);
+            }
+            catch (ResidentCannotBeAddedException)
+            {
+                return StatusCode(400, "Error: Unable to create resident.");
+            }
+        }
     }
 }

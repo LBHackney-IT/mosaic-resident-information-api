@@ -8,6 +8,7 @@ using MosaicResidentInformationApi.V1.Controllers;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
 using NUnit.Framework;
 using ResidentInformation = MosaicResidentInformationApi.V1.Boundary.Responses.ResidentInformation;
+using ResidentCannotBeAddedException = MosaicResidentInformationApi.V1.Domain.ResidentCannotBeAddedException;
 
 namespace MosaicResidentInformationApi.Tests.V1.Controllers
 {
@@ -17,13 +18,15 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
         private MosaicController _classUnderTest;
         private Mock<IGetAllResidentsUseCase> _mockGetAllResidentsUseCase;
         private Mock<IGetEntityByIdUseCase> _mockGetEntityByIdUseCase;
+        private Mock<IAddResidentUseCase> _mockAddResidentUseCase;
 
         [SetUp]
         public void SetUp()
         {
             _mockGetAllResidentsUseCase = new Mock<IGetAllResidentsUseCase>();
             _mockGetEntityByIdUseCase = new Mock<IGetEntityByIdUseCase>();
-            _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object, _mockGetEntityByIdUseCase.Object);
+            _mockAddResidentUseCase = new Mock<IAddResidentUseCase>();
+            _classUnderTest = new MosaicController(_mockGetAllResidentsUseCase.Object, _mockGetEntityByIdUseCase.Object, _mockAddResidentUseCase.Object);
         }
 
         [Test]
@@ -78,5 +81,35 @@ namespace MosaicResidentInformationApi.Tests.V1.Controllers
             response.Value.Should().BeEquivalentTo(residentInformationList);
         }
 
+        [Test]
+        public void AddResidentReturns201IfSuccessful()
+        {
+            var addResidentRequest = new AddResidentRequest();
+            var residentInformation = new ResidentInformation()
+            {
+                FirstName = "Adora",
+                LastName = "Grayskull",
+            };
+            _mockAddResidentUseCase.Setup(x => x.Execute(addResidentRequest)).Returns(residentInformation);
+
+            var response = _classUnderTest.AddResident(addResidentRequest) as CreatedAtActionResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(201);
+            response.Value.Should().BeEquivalentTo(residentInformation);
+        }
+
+        [Test]
+        public void AddResidentReturns500IfResidentCannotBeAddedExceptionIsCaught()
+        {
+            var addResidentRequest = new AddResidentRequest();
+            _mockAddResidentUseCase.Setup(x => x.Execute(addResidentRequest)).Throws(new ResidentCannotBeAddedException());
+
+            var response = _classUnderTest.AddResident(addResidentRequest) as ObjectResult;
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(400);
+            response.Value.Should().Be("Error: Unable to create resident.");
+        }
     }
 }

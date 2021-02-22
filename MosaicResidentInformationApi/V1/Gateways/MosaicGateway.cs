@@ -75,7 +75,6 @@ namespace MosaicResidentInformationApi.V1.Gateways
                 LastName = lastName,
                 FullName = $"{firstName} {lastName}", // Cannot be null
                 Gender = "-", // Cannot be null
-                PersonIdLegacy = "-", // Cannot be null
             };
 
             _mosaicContext.Persons.Add(person);
