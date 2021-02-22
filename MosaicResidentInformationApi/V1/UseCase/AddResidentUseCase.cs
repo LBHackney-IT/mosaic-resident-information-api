@@ -3,6 +3,8 @@ using MosaicResidentInformationApi.V1.Boundary.Responses;
 using MosaicResidentInformationApi.V1.Factories;
 using MosaicResidentInformationApi.V1.Gateways;
 using MosaicResidentInformationApi.V1.UseCase.Interfaces;
+using ResidentCannotBeAddedException = MosaicResidentInformationApi.V1.Domain.ResidentCannotBeAddedException;
+using DbUpdateException = Microsoft.EntityFrameworkCore.DbUpdateException;
 
 namespace MosaicResidentInformationApi.V1.UseCase
 {
@@ -16,9 +18,16 @@ namespace MosaicResidentInformationApi.V1.UseCase
 
         public ResidentInformation Execute(AddResidentRequest resident)
         {
-            var residentInformation = _mosaicGateway.InsertResident(firstName: resident.FirstName, lastName: resident.LastName);
+            try
+            {
+                var residentInformation = _mosaicGateway.InsertResident(firstName: resident.FirstName, lastName: resident.LastName);
 
-            return residentInformation.ToResponse();
+                return residentInformation.ToResponse();
+            }
+            catch (DbUpdateException)
+            {
+                throw new ResidentCannotBeAddedException();
+            }
         }
     }
 }
