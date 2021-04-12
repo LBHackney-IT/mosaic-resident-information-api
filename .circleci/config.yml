@@ -23,8 +23,8 @@ references:
       at: *workspace_root
 
 commands:
-  assume-role-and-persist-workspace:
-    description: "Assumes deployment role and persists credentials across jobs"
+  assume-role-and-persist-workspace-mosaic-production:
+    description: "Assumes deployment role and persists credentials across jobs for Mosaic-Production"
     parameters:
       aws-account:
         type: string
@@ -33,7 +33,7 @@ commands:
       - aws_assume_role/assume_role:
           account: <<parameters.aws-account>>
           profile_name: default
-          role: "LBH_Circle_CI_Deployment_Role"
+          role: "circleci-assume-role"
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -108,78 +108,24 @@ jobs:
       - run:
           name: Run tests
           command: docker-compose run mosaic-resident-information-api-test
-  assume-role-development:
+  assume-role-mosaic-production:
     executor: docker-python
     steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
-  assume-role-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
+      - assume-role-and-persist-workspace-mosaic-production:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "development"
-  terraform-init-and-apply-to-staging:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "staging"
-  terraform-init-and-apply-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "production"
-  deploy-to-development:
+  deploy-to-mosaic-production:
     executor: docker-dotnet
     steps:
       - deploy-lambda:
-          stage: "development"
-  deploy-to-staging:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "staging"
-  deploy-to-production:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "production"
+          stage: "mosaic-prod"
 
 workflows:
   check-and-deploy-development:
     jobs:
       - check-code-formatting
       - build-and-test
-      - assume-role-development:
-          context: api-assume-role-development-context
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: development
-      # - terraform-init-and-apply-to-development:
-          # requires:
-            # - assume-role-development
-          # filters:
-            # branches:
-              # only: development
-      - deploy-to-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              only: development
-  check-and-deploy-staging-and-production:
-    jobs:
+  check-and-deploy-mosaic-production:
+      jobs:
       - build-and-test:
           filters:
             branches:
@@ -197,23 +143,23 @@ workflows:
           filters:
             branches:
               only: master
-      - permit-production-release:
+      - permit-mosaic-production-release:
           type: approval
           requires:
-            - deploy-to-staging
+            - build-and-test
           filters:
             branches:
-              only: master
-      - assume-role-production:
-          context: api-assume-role-production-context
+              only: deploy-to-mosaic-prod
+      - assume-role-mosaic-production:
+          context: api-assume-role-social-care-production-context
           requires:
-            - permit-production-release
+            - permit-mosaic-production-release
           filters:
             branches:
-              only: master
-      - deploy-to-production:
+              only: deploy-to-mosaic-prod
+      - deploy-to-mosaic-production:
           requires:
-            - assume-role-production
+            - assume-role-mosaic-production
           filters:
             branches:
-              only: master
+              only: deploy-to-mosaic-prod
