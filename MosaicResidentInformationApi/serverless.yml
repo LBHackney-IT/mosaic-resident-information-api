@@ -88,21 +88,9 @@ resources:
                   Resource: "*"
 custom:
   vpc:
-    development:
+    mosaic-prod:
       securityGroupIds:
-        - sg-0615f1e12aacd43fb
+        - sg-0d92164e9f5d53800
       subnetIds:
-        - subnet-0deabb5d8fb9c3446
-        - subnet-000b89c249f12a8ad
-    staging:
-      securityGroupIds:
-        - sg-03c4502c86db0e086
-      subnetIds:
-        - subnet-06d3de1bd9181b0d7
-        - subnet-0ed7d7713d1127656
-    production:
-      securityGroupIds:
-        - sg-0e2398788c29e09ca
-      subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
+        - subnet-0665104ee973a21be
+        - subnet-005b74d8082f68a84
