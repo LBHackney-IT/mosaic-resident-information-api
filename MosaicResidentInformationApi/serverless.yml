@@ -9,6 +9,14 @@ provider:
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
   region: eu-west-2
+  apiKeys:
+    - secureAccess:
+      - api-key-${self:service}-${self:provider.stage}
+  usagePlan:
+    - secureAccess:
+        throttle:
+          burstLimit: 200
+          rateLimit: 100
 
 package:
   artifact: ./bin/release/netcoreapp3.1/mosaic-resident-information-api.zip
@@ -24,9 +32,6 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
-          authorizer:
-            arn: ${ssm:/platform-apis-lambda-authorizer-arn}
-            type: request
           private: false
     provisionedConcurrency: 10
 resources:
