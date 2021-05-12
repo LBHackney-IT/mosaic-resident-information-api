@@ -53,7 +53,12 @@ Then we have an automated six step deployment process, which runs in CircleCI.
 5. We manually confirm a production deployment in the CircleCI workflow once we're happy with our changes in staging.
 6. The application is deployed to production.
 
-Our staging and production environments are hosted by AWS. We would deploy to production per each feature/config merged into  `master`  branch.
+Our staging and production environments are hosted by AWS. For production, we deploy to two AWS accounts: ProductionAPIs and Mosaic-Production. This is due to an account migration for the [Social Care Case Viewer API](https://github.com/LBHackney-IT/social-care-case-viewer-api) which means:
+
+- Merges into `master`, deploys to StagingAPIs and then ProductionAPIs (see [CircleCI config](https://github.com/LBHackney-IT/mosaic-resident-information-api/blob/230c6dfaec39427c995f74b81dc22479ad2840d0/.circleci/config.yml#L180))
+- Merges into `deploy-to-mosaic-prod`, deploys to Mosaic-Production (see [CircleCI config](https://github.com/LBHackney-IT/mosaic-resident-information-api/blob/12b719be9bc39916965473e987c0c6c446204dd8/.circleci/config.yml#L126))
+
+The only difference between the two is that ProductionAPIs uses the Lambda authoriser for auth and Mosaic-Production uses API keys.
 
 ## Testing
 
