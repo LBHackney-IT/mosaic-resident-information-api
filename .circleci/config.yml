@@ -217,12 +217,6 @@ workflows:
           filters:
             branches:
               only: master
-      # - terraform-init-and-apply-to-staging:
-          # requires:
-            # - assume-role-staging
-          # filters:
-            # branches:
-              # only: master
       - deploy-to-staging:
           requires:
             - assume-role-staging
