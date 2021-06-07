@@ -105,6 +105,7 @@ commands:
       - run:
           name: Remove lambda
           command: |
+            cd ./MosaicResidentInformationApi/
             sls remove --stage <<parameters.stage>>
 
 jobs:
