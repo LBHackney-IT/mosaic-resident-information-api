@@ -243,7 +243,7 @@ workflows:
           filters:
             branches:
               only: master
-   remove-lambda-in-production:
+  remove-lambda-in-production:
     jobs:
       - assume-role-production:
           context: api-assume-role-production-context
