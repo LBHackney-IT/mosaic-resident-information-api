@@ -72,7 +72,7 @@ commands:
             terraform init
           name: get and init
       - run:
-          name: apply
+          name: plan
           command: |
             cd ./terraform/<<parameters.environment>>/
             terraform plan
@@ -179,16 +179,23 @@ jobs:
           stage: "production"
 
 workflows:
-  terraform-plan-production:
+  terraform-plan-and-apply-production:
     jobs:
       - assume-role-production:
           context: api-assume-role-production-context
           filters:
             branches:
-              only: update-terraform-in-circleci
+              only: master
       - terraform-init-and-plan-to-production:
           requires:
             - assume-role-production
+      - permit-production-terraform:
+          type: approval
+          requires:
+            - terraform-init-and-plan-to-production
+      - terraform-init-and-apply-to-production:
+          requires:
+            - permit-production-terraform
   check-and-deploy-development:
     jobs:
       - check-code-formatting
