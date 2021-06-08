@@ -125,7 +125,7 @@ data "aws_ssm_parameter" "mosaic_db_name_reporting" {
    allocated_storage = 20 //in GB
    maintenance_window = "sun:07:00-sun:07:30"
    replication_instance_class = "dms.t2.small"
-   replication_instance_identifier = "temporary-mosaic-dms-instance"
+   replication_instance_identifier = "production-dms-instance"
    vpc_name = "vpc-production-apis"
    dms_instance_publicly_accessible = false
    //dms task set up
