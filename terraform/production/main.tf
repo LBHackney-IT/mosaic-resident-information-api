@@ -59,7 +59,7 @@ module "postgres_db_production" {
   db_instance_class = "db.t2.micro"
   db_allocated_storage = 20
   maintenance_window ="sun:10:00-sun:10:30"
-  db_username = data.aws_ssm_parameter.mosaic_postgres_username.value
+  db_username = "mosaicapi_admin"
   db_password = data.aws_ssm_parameter.mosaic_postgres_db_password.value
   storage_encrypted = false
   multi_az = true //only true if production deployment

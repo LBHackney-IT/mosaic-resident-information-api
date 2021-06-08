@@ -155,6 +155,16 @@ jobs:
           stage: "production"
 
 workflows:
+  terraform-apply-production:
+    jobs:
+      - assume-role-production:
+          context: api-assume-role-production-context
+          filters:
+            branches:
+              only: master
+      - terraform-init-and-apply-to-production:
+          requires:
+            - assume-role-production
   check-and-deploy-development:
     jobs:
       - check-code-formatting
