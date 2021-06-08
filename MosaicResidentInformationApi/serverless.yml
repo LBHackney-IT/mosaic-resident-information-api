@@ -9,6 +9,14 @@ provider:
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
   region: eu-west-2
+  apiKeys:
+    - secureAccess:
+      - api-key-${self:service}-${self:provider.stage}
+  usagePlan:
+    - secureAccess:
+        throttle:
+          burstLimit: 200
+          rateLimit: 100
 
 package:
   artifact: ./bin/release/netcoreapp3.1/mosaic-resident-information-api.zip
@@ -19,14 +27,11 @@ functions:
     handler: MosaicResidentInformationApi::MosaicResidentInformationApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
     environment:
-      CONNECTION_STRING: Host=${ssm:/mosaic-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/mosaic-api/${self:provider.stage}/postgres-port};Database=${ssm:/mosaic-api/${self:provider.stage}/postgres-database};Username=${ssm:/mosaic-api/${self:provider.stage}/postgres-username};Password=${ssm:/mosaic-api/${self:provider.stage}/postgres-password};MaxPoolSize=${ssm:/mosaic-api/${self:provider.stage}/postgres-max-pool-size};
+      CONNECTION_STRING: Host=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-port};Database=social_care;Username=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-username};Password=${ssm:/social-care-case-viewer-api/${self:provider.stage}/postgres-password~true};MaxPoolSize=100;
     events:
       - http:
           path: /{proxy+}
           method: ANY
-          authorizer:
-            arn: ${ssm:/platform-apis-lambda-authorizer-arn}
-            type: request
           private: false
     provisionedConcurrency: 10
 resources:
@@ -83,21 +88,15 @@ resources:
                   Resource: "*"
 custom:
   vpc:
-    development:
-      securityGroupIds:
-        - sg-0615f1e12aacd43fb
-      subnetIds:
-        - subnet-0deabb5d8fb9c3446
-        - subnet-000b89c249f12a8ad
     staging:
       securityGroupIds:
         - sg-03c4502c86db0e086
       subnetIds:
         - subnet-06d3de1bd9181b0d7
         - subnet-0ed7d7713d1127656
-    production:
+    mosaic-prod:
       securityGroupIds:
-        - sg-0e2398788c29e09ca
+        - sg-0d92164e9f5d53800
       subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
+        - subnet-0665104ee973a21be
+        - subnet-005b74d8082f68a84
