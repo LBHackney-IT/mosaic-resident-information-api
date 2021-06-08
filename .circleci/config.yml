@@ -23,6 +23,21 @@ references:
       at: *workspace_root
 
 commands:
+  assume-role-and-persist-workspace:
+    description: "Assumes deployment role and persists credentials across jobs"
+    parameters:
+      aws-account:
+        type: string
+    steps:
+      - checkout
+      - aws_assume_role/assume_role:
+          account: <<parameters.aws-account>>
+          profile_name: default
+          role: "LBH_Circle_CI_Deployment_Role"
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
   assume-role-and-persist-workspace-mosaic-production:
     description: "Assumes deployment role and persists credentials across jobs for Mosaic-Production"
     parameters:
@@ -108,11 +123,21 @@ jobs:
       - run:
           name: Run tests
           command: docker-compose run mosaic-resident-information-api-test
+  assume-role-staging:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_STAGING
   assume-role-mosaic-production:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace-mosaic-production:
           aws-account: $AWS_ACCOUNT_PRODUCTION
+  deploy-to-staging:
+    executor: docker-dotnet
+    steps:
+      - deploy-lambda:
+          stage: "staging"
   deploy-to-mosaic-production:
     executor: docker-dotnet
     steps:
@@ -124,7 +149,7 @@ workflows:
     jobs:
       - check-code-formatting
       - build-and-test
-  check-and-deploy-mosaic-production:
+  check-and-deploy-staging-and-mosaic-production:
       jobs:
       - build-and-test:
           filters:
@@ -146,20 +171,20 @@ workflows:
       - permit-mosaic-production-release:
           type: approval
           requires:
-            - build-and-test
+            - deploy-to-staging
           filters:
             branches:
-              only: deploy-to-mosaic-prod
+              only: master
       - assume-role-mosaic-production:
           context: api-assume-role-social-care-production-context
           requires:
             - permit-mosaic-production-release
           filters:
             branches:
-              only: deploy-to-mosaic-prod
+              only: master
       - deploy-to-mosaic-production:
           requires:
             - assume-role-mosaic-production
           filters:
             branches:
-              only: deploy-to-mosaic-prod
+              only: master
