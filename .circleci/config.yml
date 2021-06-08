@@ -57,25 +57,6 @@ commands:
           command: |
             cd ./terraform/<<parameters.environment>>/
             terraform apply -auto-approve
-  terraform-init-then-plan:
-    description: "Initializes and applies terraform configuration"
-    parameters:
-      environment:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - run:
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform get -update=true
-            terraform init
-          name: get and init
-      - run:
-          name: plan
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform plan
   deploy-lambda:
     description: "Deploys API via Serverless"
     parameters:
@@ -157,11 +138,6 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "production"
-  terraform-init-and-plan-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-plan:
-          environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
@@ -179,23 +155,6 @@ jobs:
           stage: "production"
 
 workflows:
-  terraform-plan-and-apply-production:
-    jobs:
-      - assume-role-production:
-          context: api-assume-role-production-context
-          filters:
-            branches:
-              only: master
-      - terraform-init-and-plan-to-production:
-          requires:
-            - assume-role-production
-      - permit-production-terraform:
-          type: approval
-          requires:
-            - terraform-init-and-plan-to-production
-      - terraform-init-and-apply-to-production:
-          requires:
-            - permit-production-terraform
   check-and-deploy-development:
     jobs:
       - check-code-formatting
