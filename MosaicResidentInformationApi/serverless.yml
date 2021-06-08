@@ -88,6 +88,12 @@ resources:
                   Resource: "*"
 custom:
   vpc:
+    staging:
+      securityGroupIds:
+        - sg-03c4502c86db0e086
+      subnetIds:
+        - subnet-06d3de1bd9181b0d7
+        - subnet-0ed7d7713d1127656
     mosaic-prod:
       securityGroupIds:
         - sg-0d92164e9f5d53800
