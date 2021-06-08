@@ -85,28 +85,6 @@ commands:
           command: |
             cd ./MosaicResidentInformationApi/
             sls deploy --stage <<parameters.stage>> --conceal --force
-  remove-lambda:
-    description: "Removes API and lambdas via Serverless"
-    parameters:
-      stage:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_13.x | bash -
-            apt-get update && apt-get install -y nodejs
-      - run:
-          name: Install serverless CLI
-          command: npm i -g serverless
-      - run:
-          name: Remove lambda
-          command: |
-            cd ./MosaicResidentInformationApi/
-            sls remove --stage <<parameters.stage>>
 
 jobs:
   check-code-formatting:
@@ -175,11 +153,6 @@ jobs:
     steps:
       - deploy-lambda:
           stage: "production"
-  remove-lambda-in-production:
-    executor: docker-dotnet
-    steps:
-      - remove-lambda:
-          stage: "production"
 
 workflows:
   check-and-deploy-development:
@@ -244,14 +217,3 @@ workflows:
           filters:
             branches:
               only: master
-  remove-lambda-in-production:
-    jobs:
-      - assume-role-production:
-          context: api-assume-role-production-context
-          filters:
-            branches:
-              only:
-                - master
-      - remove-lambda-in-production:
-          requires:
-            - assume-role-production
