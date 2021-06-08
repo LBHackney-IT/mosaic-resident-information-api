@@ -56,7 +56,7 @@ module "postgres_db_production" {
   subnet_ids = data.aws_subnet_ids.production.ids
   db_engine = "postgres"
   db_engine_version = "11.1" //DMS does not work well with v12
-  db_instance_class = "db.t2.micro"
+  db_instance_class = "db.t3.micro"
   db_allocated_storage = 20
   maintenance_window ="sun:10:00-sun:10:30"
   db_username = "mosaicapi_admin"
@@ -100,7 +100,7 @@ data "aws_ssm_parameter" "mosaic_db_name_reporting" {
 }
 
  module "dms_setup_production" {
-   source = "github.com/LBHackney-IT/aws-dms-terraform.git//dms_full_setup"
+   source = "github.com/LBHackney-IT/aws-dms-terraform.git//dms_full_setup?ref=temp-mosaic-platform-api-changes"
    environment_name = "production" //used for resource tags
    project_name = "resident-information-apis" //used for resource tags
    //target db for dms endpoint
