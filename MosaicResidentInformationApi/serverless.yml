@@ -33,7 +33,6 @@ functions:
           path: /{proxy+}
           method: ANY
           private: false
-    provisionedConcurrency: 10
 resources:
   Resources:
     lambdaExecutionRole:
