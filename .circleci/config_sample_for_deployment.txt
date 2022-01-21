@@ -53,8 +53,27 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  remove-resources:
-    description: "Remove all resources created via Serverless"
+  terraform-init-then-apply:
+    description: "Initializes and applies terraform configuration"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+          name: get and init
+      - run:
+          name: apply
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform apply -auto-approve
+  deploy-lambda:
+    description: "Deploys API via Serverless"
     parameters:
       stage:
         type: string
@@ -71,12 +90,38 @@ commands:
           name: Install serverless CLI
           command: npm i -g serverless
       - run:
-          name: Remove resources
+          name: Build lambda
           command: |
             cd ./MosaicResidentInformationApi/
-            sls remove --stage <<parameters.stage>>
-
+            chmod +x ./build.sh
+            ./build.sh
+      - run:
+          name: Deploy lambda
+          command: |
+            cd ./MosaicResidentInformationApi/
+            sls deploy --stage <<parameters.stage>> --conceal --force
 jobs:
+  check-code-formatting:
+    executor: docker-dotnet
+    steps:
+      - checkout
+      - run:
+          name: Install dotnet format
+          command: dotnet tool install dotnet-format --tool-path ./dotnet-format-local/
+      - run:
+          name: Run formatter check
+          command: ./dotnet-format-local/dotnet-format --check
+  build-and-test:
+    executor: docker-python
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: build
+          command: docker-compose build mosaic-resident-information-api-test
+      - run:
+          name: Run tests
+          command: docker-compose run mosaic-resident-information-api-test
   assume-role-staging:
     executor: docker-python
     steps:
@@ -87,53 +132,56 @@ jobs:
     steps:
       - assume-role-and-persist-workspace-mosaic-production:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  remove-staging-resources:
+  deploy-to-staging:
     executor: docker-dotnet
     steps:
-      - remove-resources:
+      - deploy-lambda:
           stage: "staging"
-  remove-mosaic-production-resources:
+  deploy-to-mosaic-production:
     executor: docker-dotnet
     steps:
-      - remove-resources:
+      - deploy-lambda:
           stage: "mosaic-prod"
 
 workflows:
-  remove-resources-from-staging-and-mosaic-production:
+  check-and-deploy-development:
     jobs:
-      - permit-staging-resources-removal:
-          type: approval
+      - check-code-formatting
+      - build-and-test
+  check-and-deploy-staging-and-mosaic-production:
+      jobs:
+      - build-and-test:
           filters:
             branches:
               only: master
       - assume-role-staging:
-          requires:
-            - permit-staging-resources-removal
           context: api-assume-role-staging-context
+          requires:
+            - build-and-test
           filters:
             branches:
               only: master
-      - remove-staging-resources:
+      - deploy-to-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
               only: master
-      - permit-mosaic-production-resources-removal:
+      - permit-mosaic-production-release:
           type: approval
           requires:
-            - remove-staging-resources
+            - deploy-to-staging
           filters:
             branches:
               only: master
       - assume-role-mosaic-production:
           context: api-assume-role-social-care-production-context
           requires:
-            - permit-mosaic-production-resources-removal
+            - permit-mosaic-production-release
           filters:
             branches:
               only: master
-      - remove-mosaic-production-resources:
+      - deploy-to-mosaic-production:
           requires:
             - assume-role-mosaic-production
           filters:
