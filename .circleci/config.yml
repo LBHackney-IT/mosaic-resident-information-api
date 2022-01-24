@@ -23,21 +23,6 @@ references:
       at: *workspace_root
 
 commands:
-  assume-role-and-persist-workspace:
-    description: "Assumes deployment role and persists credentials across jobs"
-    parameters:
-      aws-account:
-        type: string
-    steps:
-      - checkout
-      - aws_assume_role/assume_role:
-          account: <<parameters.aws-account>>
-          profile_name: default
-          role: "LBH_Circle_CI_Deployment_Role"
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - .aws
   assume-role-and-persist-workspace-mosaic-production:
     description: "Assumes deployment role and persists credentials across jobs for Mosaic-Production"
     parameters:
@@ -72,26 +57,17 @@ commands:
           command: npm i -g serverless
       - run:
           name: Remove resources
+          no_output_timeout: 40m
           command: |
             cd ./MosaicResidentInformationApi/
             sls remove --stage <<parameters.stage>>
 
 jobs:
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
   assume-role-mosaic-production:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace-mosaic-production:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  remove-staging-resources:
-    executor: docker-dotnet
-    steps:
-      - remove-resources:
-          stage: "staging"
   remove-mosaic-production-resources:
     executor: docker-dotnet
     steps:
@@ -99,30 +75,10 @@ jobs:
           stage: "mosaic-prod"
 
 workflows:
-  remove-resources-from-staging-and-mosaic-production:
+  remove-resources-from-mosaic-production:
     jobs:
-      - permit-staging-resources-removal:
-          type: approval
-          filters:
-            branches:
-              only: master
-      - assume-role-staging:
-          requires:
-            - permit-staging-resources-removal
-          context: api-assume-role-staging-context
-          filters:
-            branches:
-              only: master
-      - remove-staging-resources:
-          requires:
-            - assume-role-staging
-          filters:
-            branches:
-              only: master
       - permit-mosaic-production-resources-removal:
           type: approval
-          requires:
-            - remove-staging-resources
           filters:
             branches:
               only: master
