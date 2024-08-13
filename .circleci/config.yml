@@ -122,6 +122,21 @@ jobs:
     steps:
       - remove-resources:
           stage: "mosaic-prod"
+  assume-role-development:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_DEVELOPMENT
+  preview-terraform-development:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "development"
+  terraform-init-and-apply-to-development:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-apply:
+          environment: "development"
 
 workflows:
   remove-resources-from-mosaic-production:
