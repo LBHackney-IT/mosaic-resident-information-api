@@ -154,6 +154,20 @@ jobs:
           environment: "staging"
 
 workflows:
+  feature:
+    jobs:
+      - assume-role-development:
+          context: api-assume-role-development-context
+          filters:
+            branches:
+              ignore: master
+      - preview-terraform-development:
+          requires:
+            - assume-role-development
+          filters:
+            branches:
+              ignore: master
+
   remove-resources-from-mosaic-production:
     jobs:
       - permit-mosaic-production-resources-removal:
