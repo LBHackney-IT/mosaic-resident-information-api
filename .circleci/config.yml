@@ -199,7 +199,25 @@ workflows:
           filters:
             branches:
               only: master
-      
+
+      - permit-mosaic-staging-resources-removal:
+          type: approval
+          filters:
+            branches:
+              only: master
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          requires:
+            - permit-mosaic-staging-resources-removal
+          filters:
+            branches:
+              only: master
+      - terraform-init-and-apply-to-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              only: master
 
       - permit-mosaic-production-resources-removal:
           type: approval
