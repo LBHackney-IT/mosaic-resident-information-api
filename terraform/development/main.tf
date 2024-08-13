@@ -33,17 +33,3 @@ terraform {
     key     = "services/mosaic-resident-information-api/state"
   }
 }
-
-/*    POSTGRES SET UP    */
-data "aws_vpc" "development_vpc" {
-  tags = {
-    Name = "vpc-development-apis-development"
-  }
-}
-data "aws_subnet_ids" "development_private_subnets" {
-  vpc_id = data.aws_vpc.development_vpc.id
-  filter {
-    name   = "tag:Type"
-    values = ["private"]
-  }
-}
