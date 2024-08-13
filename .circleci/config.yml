@@ -167,6 +167,17 @@ workflows:
           filters:
             branches:
               ignore: master
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          filters:
+            branches:
+              ignore: master
+      - preview-terraform-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              ignore: master
 
   remove-resources-from-mosaic-production:
     jobs:
