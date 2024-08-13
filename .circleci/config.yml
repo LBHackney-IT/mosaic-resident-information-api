@@ -181,6 +181,23 @@ workflows:
 
   remove-resources-from-mosaic-production:
     jobs:
+      - permit-mosaic-development-resources-removal:
+          type: approval
+          filters:
+            branches:
+              only: master
+      - assume-role-development:
+          context: api-assume-role-development-context
+          filters:
+            branches:
+              only: master
+      - terraform-init-and-apply-to-development:
+          requires:
+            - assume-role-development
+          filters:
+            branches:
+              only: master
+
       - permit-mosaic-production-resources-removal:
           type: approval
           filters:
