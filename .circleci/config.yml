@@ -137,6 +137,21 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "development"
+  assume-role-staging:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_STAGING
+  preview-terraform-staging:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "staging"
+  terraform-init-and-apply-to-staging:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-apply:
+          environment: "staging"
 
 workflows:
   remove-resources-from-mosaic-production:
