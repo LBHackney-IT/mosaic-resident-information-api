@@ -188,6 +188,8 @@ workflows:
               only: master
       - assume-role-development:
           context: api-assume-role-development-context
+          requires:
+            - permit-mosaic-development-resources-removal
           filters:
             branches:
               only: master
@@ -197,6 +199,7 @@ workflows:
           filters:
             branches:
               only: master
+      
 
       - permit-mosaic-production-resources-removal:
           type: approval
