@@ -61,6 +61,55 @@ commands:
           command: |
             cd ./MosaicResidentInformationApi/
             sls remove --stage <<parameters.stage>>
+  terraform-init-then-apply:
+    description: "Initializes and applies terraform configuration"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+          name: get and init
+      - run:
+          name: apply
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform apply -auto-approve
+  assume-role-and-persist-workspace:
+    description: "Assumes deployment role and persists credentials across jobs"
+    parameters:
+      aws-account:
+        type: string
+    steps:
+      - checkout
+      - aws_assume_role/assume_role:
+          account: <<parameters.aws-account>>
+          profile_name: default
+          role: "LBH_Circle_CI_Deployment_Role"
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
+  terraform-preview:
+    description: "Initializes and applies terraform configuration"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+            terraform plan
+          name: preview TF
 
 jobs:
   assume-role-mosaic-production:
@@ -73,8 +122,63 @@ jobs:
     steps:
       - remove-resources:
           stage: "mosaic-prod"
+  assume-role-development:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_DEVELOPMENT
+  preview-terraform-development:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "development"
+  terraform-init-and-apply-to-development:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-apply:
+          environment: "development"
+  assume-role-staging:
+    executor: docker-python
+    steps:
+      - assume-role-and-persist-workspace:
+          aws-account: $AWS_ACCOUNT_STAGING
+  preview-terraform-staging:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "staging"
+  terraform-init-and-apply-to-staging:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-apply:
+          environment: "staging"
 
 workflows:
+  feature:
+    jobs:
+      - assume-role-development:
+          context: api-assume-role-development-context
+          filters:
+            branches:
+              ignore: master
+      - preview-terraform-development:
+          requires:
+            - assume-role-development
+          filters:
+            branches:
+              ignore: master
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          filters:
+            branches:
+              ignore: master
+      - preview-terraform-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              ignore: master
+
   remove-resources-from-mosaic-production:
     jobs:
       - permit-mosaic-production-resources-removal:
