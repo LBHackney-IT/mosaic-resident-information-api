@@ -11,19 +11,6 @@ provider "aws" {
   region  = "eu-west-2"
   version = "~> 2.0"
 }
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
-locals {
-   parameter_store = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter"
-}
-
-data "aws_iam_role" "ec2_container_service_role" {
-  name = "ecsServiceRole"
-}
-
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
-}
 
 terraform {
   backend "s3" {
@@ -31,63 +18,5 @@ terraform {
     encrypt = true
     region  = "eu-west-2"
     key     = "services/mosaic-resident-information-api/state" 
-  }
-}
-
-/*    POSTGRES SET UP    */
-data "aws_vpc" "staging_vpc" {
-  tags = {
-    Name = "vpc-staging-apis-staging"
-  }
-}
-data "aws_subnet_ids" "staging" {
-  vpc_id = data.aws_vpc.staging_vpc.id
-  filter {
-    name   = "tag:Type"
-    values = ["private"] 
-  }
-}
- data "aws_ssm_parameter" "mosaic_postgres_db_password" {
-   name = "/mosaic-api/staging/postgres-password"
- }
-
- data "aws_ssm_parameter" "mosaic_postgres_username" {
-   name = "/mosaic-api/staging/postgres-username"
- }
-
-
-/*    DMS SET UP    */
-
-data "aws_ssm_parameter" "mosaic_test_username" {
-   name = "/mosaic/test-server/username"
-}
-data "aws_ssm_parameter" "mosaic_test_password" {
-   name = "/mosaic/test-server/password"
-}
-data "aws_ssm_parameter" "mosaic_test_hostname" {
-   name = "/mosaic/test-server/hostname"
-}
- data "aws_ssm_parameter" "mosaic_postgres_hostname" {
-   name = "/mosaic-api/staging/postgres-hostname"
-}
-
-/* ONE OFF ACCOUNT SET UP FOR DMS REQUIRED ROLES */
-
- data "aws_iam_policy_document" "dms_assume_role" {
-   statement {
-     actions = ["sts:AssumeRole"]
-
-     principals {
-       identifiers = ["dms.amazonaws.com"]
-       type        = "Service"
-     }
-   }
- }
-
-# /*   ADD SECURITY RULE TO POSTGRES DB TO ALLOW DMS TRAFFIC   */
-data "aws_security_group" "mosaic_postgres_sg" {
-   filter {
-    name   = "tag:Name"
-    values = ["mosaic_mirror-staging"] 
   }
 }
