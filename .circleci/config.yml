@@ -122,6 +122,8 @@ commands:
             aws dms describe-replication-tasks --query 'ReplicationTasks[].[ReplicationTaskIdentifier,ReplicationTaskArn]' --output text |
             while IFS=$'\t' read -r name arn; do
               echo "Removing task named: #$name# with arn: #$arn#."
+              aws dms delete-replication-task --replication-task-arn "$arn"
+              echo -e "Task removed.\n"
             done
 
 
