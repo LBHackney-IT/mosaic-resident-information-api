@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@3.0.0
-  aws-cli: circleci/aws-cli@0.1.9
+  aws-cli: circleci/aws-cli@5.1.0
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
 executors:
@@ -110,6 +110,22 @@ commands:
             terraform init
             terraform plan
           name: preview TF
+  remove-abandoned-staging-tasks:
+    description: "Remove abandoned replication tasks that were stopped in 2021"
+    steps:
+      - *attach_workspace
+      - aws-cli/install
+      - run:
+          name: remove abandoned tasks
+          no_output_timeout: 45m
+          command: |
+            aws dms describe-replication-tasks --query 'ReplicationTasks[].[ReplicationTaskIdentifier,ReplicationTaskArn]' --output text |
+            while IFS=$'\t' read -r name arn; do
+              echo "Removing task named: #$name# with arn: #$arn#."
+              aws dms delete-replication-task --replication-task-arn "$arn"
+              echo -e "Task removed.\n"
+            done
+
 
 jobs:
   assume-role-mosaic-production:
@@ -138,6 +154,11 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "staging"
+
+  clear-dms-tasks:
+    executor: aws-cli/default
+    steps:
+      - remove-abandoned-staging-tasks
 
 workflows:
   feature:
@@ -168,9 +189,15 @@ workflows:
           filters:
             branches:
               only: master
-      - preview-terraform-staging:
+      - clear-dms-tasks:
           requires:
             - assume-role-staging
+          filters:
+            branches:
+              only: master
+      - preview-terraform-staging:
+          requires:
+            - clear-dms-tasks
           filters:
             branches:
               only: master
