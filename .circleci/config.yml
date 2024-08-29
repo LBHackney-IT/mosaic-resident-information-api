@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@3.0.0
-  aws-cli: circleci/aws-cli@1.0.0
+  aws-cli: circleci/aws-cli@5.1.0
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
 
 executors:
@@ -113,6 +113,7 @@ commands:
   remove-abandoned-staging-tasks:
     description: "Remove abandoned replication tasks that were stopped in 2021"
     steps:
+      - *attach_workspace
       - aws-cli/install
       - run:
           name: remove abandoned tasks
@@ -155,16 +156,18 @@ jobs:
   clear-dms-tasks:
     executor: aws-cli/default
     steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
       - remove-abandoned-staging-tasks
 
 workflows:
   feature:
     jobs:
-      - clear-dms-tasks
       - assume-role-staging:
           context: api-assume-role-staging-context
+          filters:
+            branches:
+              ignore: master
+      - clear-dms-tasks:
+        context: api-assume-role-staging-context
           filters:
             branches:
               ignore: master
