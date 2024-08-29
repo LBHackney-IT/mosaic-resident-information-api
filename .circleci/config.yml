@@ -167,7 +167,8 @@ workflows:
             branches:
               ignore: master
       - clear-dms-tasks:
-        context: api-assume-role-staging-context
+          requires:
+            - assume-role-staging
           filters:
             branches:
               ignore: master
