@@ -121,7 +121,7 @@ commands:
           command: |
             aws dms describe-replication-tasks --query 'ReplicationTasks[].[ReplicationTaskIdentifier,ReplicationTaskArn]' --output text |
             while IFS=$'\t' read -r name arn; do
-              echo "This task is named: #$name#, and its arn is: #$arn#."
+              echo "Removing task named: #$name# with arn: #$arn#."
             done
 
 
@@ -166,12 +166,6 @@ workflows:
           filters:
             branches:
               ignore: master
-      - clear-dms-tasks:
-          requires:
-            - assume-role-staging
-          filters:
-            branches:
-              ignore: master
       - preview-terraform-staging:
           requires:
             - assume-role-staging
@@ -193,9 +187,15 @@ workflows:
           filters:
             branches:
               only: master
-      - preview-terraform-staging:
+      - clear-dms-tasks:
           requires:
             - assume-role-staging
+          filters:
+            branches:
+              only: master
+      - preview-terraform-staging:
+          requires:
+            - clear-dms-tasks
           filters:
             branches:
               only: master
