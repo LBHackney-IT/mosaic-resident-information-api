@@ -122,21 +122,7 @@ jobs:
     steps:
       - remove-resources:
           stage: "mosaic-prod"
-  assume-role-development:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  preview-terraform-development:
-    executor: docker-terraform
-    steps:
-      - terraform-preview:
-          environment: "development"
-  terraform-init-and-apply-to-development:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "development"
+
   assume-role-staging:
     executor: docker-python
     steps:
@@ -156,17 +142,6 @@ jobs:
 workflows:
   feature:
     jobs:
-      - assume-role-development:
-          context: api-assume-role-development-context
-          filters:
-            branches:
-              ignore: master
-      - preview-terraform-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              ignore: master
       - assume-role-staging:
           context: api-assume-role-staging-context
           filters:
@@ -181,31 +156,6 @@ workflows:
 
   remove-resources-from-mosaic-production:
     jobs:
-      - permit-mosaic-development-resources-removal:
-          type: approval
-          filters:
-            branches:
-              only: master
-      - assume-role-development:
-          context: api-assume-role-development-context
-          requires:
-            - permit-mosaic-development-resources-removal
-          filters:
-            branches:
-              only: master
-      - preview-terraform-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              only: master
-      - terraform-init-and-apply-to-development:
-          requires:
-            - preview-terraform-development
-          filters:
-            branches:
-              only: master
-
       - permit-mosaic-staging-resources-removal:
           type: approval
           filters:
