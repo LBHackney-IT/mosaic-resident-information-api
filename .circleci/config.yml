@@ -156,17 +156,6 @@ jobs:
 workflows:
   feature:
     jobs:
-      - assume-role-development:
-          context: api-assume-role-development-context
-          filters:
-            branches:
-              ignore: master
-      - preview-terraform-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              ignore: master
       - assume-role-staging:
           context: api-assume-role-staging-context
           filters:
@@ -181,31 +170,6 @@ workflows:
 
   remove-resources-from-mosaic-production:
     jobs:
-      - permit-mosaic-development-resources-removal:
-          type: approval
-          filters:
-            branches:
-              only: master
-      - assume-role-development:
-          context: api-assume-role-development-context
-          requires:
-            - permit-mosaic-development-resources-removal
-          filters:
-            branches:
-              only: master
-      - preview-terraform-development:
-          requires:
-            - assume-role-development
-          filters:
-            branches:
-              only: master
-      - terraform-init-and-apply-to-development:
-          requires:
-            - preview-terraform-development
-          filters:
-            branches:
-              only: master
-
       - permit-mosaic-staging-resources-removal:
           type: approval
           filters:
