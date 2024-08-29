@@ -121,57 +121,10 @@ data "aws_ssm_parameter" "mosaic_test_hostname" {
    role       = "${aws_iam_role.dms-vpc-role.name}"
  }
 
-/* DMS SET UP INCLUDING DMS INSTANCE AS NONE EXISTS */
-
-module "dms_setup_staging" {
-  source = "github.com/LBHackney-IT/aws-dms-terraform.git//dms_full_setup" 
-  environment_name = "staging" //used for resource tags
-  project_name = "resident-information-apis" //used for resource tags
-  //target db for dms endpoint
-  target_db_name = "mosaic_mirror" 
-  target_endpoint_identifier = "target-mosaic-test-endpoint" 
-  target_db_engine_name = "postgres"
-  target_db_port = 5002
-  target_db_username = data.aws_ssm_parameter.mosaic_postgres_username.value
-  target_db_password = data.aws_ssm_parameter.mosaic_postgres_db_password.value
-  target_db_server = data.aws_ssm_parameter.mosaic_postgres_hostname.value
-  target_endpoint_ssl_mode = "none"
-  //source db for dms endpoint
-  source_db_name = "mostest" 
-  source_endpoint_identifier = "source-mosaic-test-endpoint" 
-  source_db_engine_name = "sqlserver"
-  source_db_port = 1433
-  source_db_username = data.aws_ssm_parameter.mosaic_test_username.value //ensure you save your on-prem credentials to the Parameter store and reference it here
-  source_db_password = data.aws_ssm_parameter.mosaic_test_password.value //ensure you save your on-prem credentials to the Parameter store and reference it here
-  source_db_server = data.aws_ssm_parameter.mosaic_test_hostname.value
-  source_endpoint_ssl_mode = "none"
-  //replication instance set up -> IF SOURCE IS 'dms_full_setup'
-  allocated_storage = 20 //in GB
-  maintenance_window = "sun:07:00-sun:07:30" 
-  replication_instance_class = "dms.t2.small" 
-  replication_instance_identifier = "staging-dms-instance" 
-  vpc_name = "vpc-staging-apis" 
-  dms_instance_publicly_accessible = false
-  //dms task set up
-  migration_type = "full-load-and-cdc" 
-  replication_task_indentifier = "mosaic-api-dms-task" 
-  task_settings = file("${path.module}/task_settings.json") 
-  task_table_mappings = file("${path.module}/selection_rules.json")
-}
-
 # /*   ADD SECURITY RULE TO POSTGRES DB TO ALLOW DMS TRAFFIC   */
 data "aws_security_group" "mosaic_postgres_sg" {
    filter {
     name   = "tag:Name"
     values = ["mosaic_mirror-staging"] 
   }
-}
-
-resource "aws_security_group_rule" "allow_dms_traffic" {
-  type              = "ingress"
-  from_port         = 0
-  to_port           = 0
-  protocol          = "all"
-  source_security_group_id = module.dms_setup_staging.dms_instance_sg
-  security_group_id = data.aws_security_group.mosaic_postgres_sg.id
 }
