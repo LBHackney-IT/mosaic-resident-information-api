@@ -120,7 +120,7 @@ commands:
           no_output_timeout: 45m
           command: |
             aws dms describe-replication-tasks --query 'ReplicationTasks[].[ReplicationTaskIdentifier,ReplicationTaskArn]' --output text |
-            while IFS='\t' read -r name arn; do
+            while IFS=$'\t' read -r name arn; do
               echo "This task is named: #$name#, and its arn is: #$arn#."
             done
 
