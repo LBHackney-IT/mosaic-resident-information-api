@@ -1,5 +1,8 @@
 # Mosaic Resident Information API
 
+# Please note: this API and the related resources have been decommissioned
+<!---
+
 Mosaic resident information API allows services to retrieve information from Mosaic
 This API hold two GET endpoint one to retrieve all resident record from mosaic and one to retrieve record for a specified ID
 
@@ -107,3 +110,4 @@ Note: The Host name needs to be the name of the stub database docker-compose ser
 [universal-housing-simulator]: https://github.com/LBHackney-IT/lbh-universal-housing-simulator
 [made-tech]: https://madetech.com/
 [AWS-CLI]: https://aws.amazon.com/cli/
+-->
