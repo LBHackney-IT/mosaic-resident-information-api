@@ -1,6 +1,6 @@
 # Mosaic Resident Information API
 
-# Please note: this API and the related resources have been decommissioned
+Please note: this API and the related resources have been decommissioned
 <!---
 
 Mosaic resident information API allows services to retrieve information from Mosaic
